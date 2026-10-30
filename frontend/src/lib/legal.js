@@ -1,10 +1,7 @@
-// Templates — fields in [KÖŞELİ PARANTEZ] must be filled with real business info before going live.
-const S = "[ŞİRKET UNVANI]";
-const ADDR = "[AÇIK ADRES]";
-const MERSIS = "[MERSİS NO]";
-const VKN = "[VERGİ DAİRESİ / VERGİ NO]";
-const TEL = "[TELEFON]";
-const KEP = "[KEP ADRESİ]";
+const S = "LUMA PETSHOP";
+const ADDR = "Göztepe Mah. Maslak Cad. No:7 Dükkan No:122 Luxera, Bağcılar/İstanbul";
+const VKN = "Vergi Dairesi / No: Güneşli V.D. – 5700577933";
+const TEL = "0538 949 35 67";
 
 export const LEGAL_PAGES = {
   hakkimizda: {
@@ -12,7 +9,7 @@ export const LEGAL_PAGES = {
     sections: [
       ["Luma Petshop", "Luma Petshop; köpek, kedi, kuş, balık ve kemirgen dostlarımız için mama, oyuncak, aksesuar ve bakım ürünleri sunan bir çevrim içi evcil hayvan mağazasıdır."],
       ["Neden Luma?", "Ürünlerimizi güvenilir tedarikçilerden temin eder, siparişlerinizi özenle paketler ve hızlı teslimat için çalışırız. Kapıda nakit veya kartla ödeme seçenekleri sunarız."],
-      ["Şirket Bilgileri", `Unvan: ${S}\nAdres: ${ADDR}\n${VKN}\n${MERSIS}`],
+      ["Şirket Bilgileri", `Unvan: ${S}\nAdres: ${ADDR}\n${VKN}\nTelefon: ${TEL}`],
     ],
   },
   iletisim: {
@@ -20,8 +17,8 @@ export const LEGAL_PAGES = {
     contact: true,
     sections: [
       ["Bize Ulaşın", `E-posta: info@lumapetshop.com.tr\nTelefon: ${TEL}\nAdres: ${ADDR}`],
-      ["Çalışma Saatleri", "[ÇALIŞMA SAATLERİ — ör. Hafta içi 09:00–18:00]"],
-      ["Resmî Bilgiler", `Unvan: ${S}\n${VKN}\n${MERSIS}\nKEP: ${KEP}`],
+      ["Çalışma Saatleri", "Her gün 10:00 – 23:00"],
+      ["Resmî Bilgiler", `Unvan: ${S}\n${VKN}`],
     ],
   },
   "gizlilik-politikasi": {
@@ -39,23 +36,23 @@ export const LEGAL_PAGES = {
   kvkk: {
     title: "KVKK Aydınlatma Metni",
     sections: [
-      ["Veri Sorumlusu", `6698 sayılı Kişisel Verilerin Korunması Kanunu ("KVKK") uyarınca veri sorumlusu: ${S}, ${ADDR}, ${MERSIS}.`],
+      ["Veri Sorumlusu", `6698 sayılı Kişisel Verilerin Korunması Kanunu ("KVKK") uyarınca veri sorumlusu: ${S}, ${ADDR}, ${VKN}.`],
       ["İşlenen Kişisel Veriler", "Kimlik (ad-soyad), iletişim (e-posta, telefon, adres), müşteri işlem (sipariş, ödeme yöntemi, fatura/teslimat bilgileri), işlem güvenliği (oturum ve erişim kayıtları), pazarlama dışı tercih verileri (favoriler, değerlendirmeler)."],
       ["İşleme Amaçları", "Mesafeli satış sözleşmesinin kurulması ve ifası, siparişlerin teslimi, müşteri ilişkileri yönetimi, faturalandırma, bilgi güvenliğinin sağlanması, yasal yükümlülüklerin yerine getirilmesi ve talep/şikâyetlerin yönetimi."],
       ["Hukuki Sebepler", "KVKK m.5/2 (c) sözleşmenin kurulması veya ifası, (ç) hukuki yükümlülüğün yerine getirilmesi, (f) meşru menfaat; açık rıza gerektiren işlemler için m.5/1 kapsamında açık rıza."],
-      ["Aktarım", "Kişisel verileriniz; kargo şirketleri, barındırma, veritabanı, e-posta ve ödeme hizmeti sağlayıcıları ile yetkili kamu kurumlarına KVKK m.8 ve m.9'a uygun olarak aktarılabilir. Yurt dışında bulunan hizmet sağlayıcılara aktarım için KVKK m.9 kapsamındaki şartlar sağlanır. [KULLANILAN HİZMET SAĞLAYICILARIN LİSTESİNİ VE AKTARIM DAYANAĞINI HUKUK DANIŞMANINIZLA NETLEŞTİRİN]"],
+      ["Aktarım", "Kişisel verileriniz; kargo şirketleri, barındırma, veritabanı, e-posta ve ödeme hizmeti sağlayıcıları ile yetkili kamu kurumlarına KVKK m.8 ve m.9'a uygun olarak aktarılabilir. Başlıca hizmet sağlayıcılarımız: Geliver (kargo), Supabase (veritabanı ve görsel depolama), Clerk (üyelik ve oturum), Resend (e-posta bildirimleri) ve aktif edildiğinde iyzico (ödeme). Yurt dışı aktarımlar KVKK m.9 uyarınca standart sözleşme veya açık rızanıza dayanılarak yapılır."],
       ["Toplama Yöntemi", "Veriler internet sitesi üzerindeki üyelik, sipariş, değerlendirme ve iletişim kanalları aracılığıyla elektronik ortamda toplanır."],
       ["Haklarınız (KVKK m.11)", "Verilerinizin işlenip işlenmediğini öğrenme, bilgi talep etme, amacını öğrenme, aktarıldığı üçüncü kişileri bilme, düzeltme, silme/yok etme, itiraz etme ve zararın giderilmesini talep etme haklarına sahipsiniz."],
-      ["Başvuru", `Taleplerinizi info@lumapetshop.com.tr adresine veya ${KEP} KEP adresine ya da ${ADDR} adresine yazılı olarak iletebilirsiniz. Başvurular en geç 30 gün içinde ücretsiz sonuçlandırılır.`],
+      ["Başvuru", `Taleplerinizi info@lumapetshop.com.tr adresine e-posta ile veya ${ADDR} adresine yazılı olarak iletebilirsiniz. Başvurular en geç 30 gün içinde ücretsiz sonuçlandırılır.`],
     ],
   },
   "mesafeli-satis-sozlesmesi": {
     title: "Mesafeli Satış Sözleşmesi",
     sections: [
-      ["1. Taraflar", `SATICI: ${S}\nAdres: ${ADDR}\nTelefon: ${TEL}\nE-posta: info@lumapetshop.com.tr\n${VKN} · ${MERSIS}\n\nALICI: Sipariş sırasında bilgileri girilen müşteri.`],
+      ["1. Taraflar", `SATICI: ${S}\nAdres: ${ADDR}\nTelefon: ${TEL}\nE-posta: info@lumapetshop.com.tr\n${VKN}\n\nALICI: Sipariş sırasında bilgileri girilen müşteri.`],
       ["2. Konu", "Bu sözleşme, 6502 sayılı Tüketicinin Korunması Hakkında Kanun ve Mesafeli Sözleşmeler Yönetmeliği uyarınca, ALICI'nın internet sitesi üzerinden elektronik ortamda sipariş verdiği ürünlerin satışı ve teslimine ilişkin tarafların hak ve yükümlülüklerini düzenler."],
       ["3. Ürün, Fiyat ve Ödeme", "Ürünlerin cinsi, miktarı, KDV dahil satış fiyatı, kargo ücreti ve ödeme şekli sipariş özetinde ve ALICI'ya gönderilen sipariş onay e-postasında yer alır. Ödeme; kapıda nakit, kapıda kredi kartı veya aktif olduğunda online kart ödemesi ile yapılır."],
-      ["4. Teslimat", "Ürünler, ALICI'nın belirttiği adrese en geç 30 gün içinde kargo ile teslim edilir. [ORTALAMA TESLİM SÜRESİ — ör. 1-3 iş günü]. 500 ₺ ve üzeri siparişlerde kargo ücretsizdir; altındaki siparişlerde kargo ücreti sipariş özetinde gösterilir."],
+      ["4. Teslimat", "Ürünler, ALICI'nın belirttiği adrese en geç 30 gün içinde kargo ile teslim edilir. Siparişler onaylandıktan sonra 1-3 iş günü içinde Geliver aracılığıyla kargoya verilir. 500 ₺ ve üzeri siparişlerde kargo ücretsizdir; altındaki siparişlerde kargo ücreti sipariş özetinde gösterilir."],
       ["5. Cayma Hakkı", "ALICI, ürünü teslim aldığı tarihten itibaren 14 gün içinde herhangi bir gerekçe göstermeksizin ve cezai şart ödemeksizin cayma hakkını kullanabilir. Cayma bildirimi info@lumapetshop.com.tr adresine yapılır. Bedel, iade ürünün SATICI'ya ulaşmasından itibaren en geç 14 gün içinde ödeme yöntemine uygun şekilde iade edilir."],
       ["6. Cayma Hakkının İstisnaları", "Ambalajı açılmış, kullanılmış veya hijyen açısından iadesi uygun olmayan ürünler (ör. açılmış mama, ödül maması, bakım ürünleri), çabuk bozulabilen veya son kullanma tarihi geçebilecek ürünler Yönetmelik m.15 uyarınca cayma hakkı kapsamı dışındadır."],
       ["7. Uyuşmazlık", "Uyuşmazlıklarda, Ticaret Bakanlığı'nca ilan edilen parasal sınırlar dahilinde ALICI'nın yerleşim yerindeki Tüketici Hakem Heyetleri veya Tüketici Mahkemeleri yetkilidir."],
@@ -65,10 +62,10 @@ export const LEGAL_PAGES = {
   "iade-ve-teslimat": {
     title: "İade ve Teslimat Koşulları",
     sections: [
-      ["Teslimat", "Siparişler onaylandıktan sonra hazırlanır ve kargoya verilir. Kargoya verildiğinde e-posta ile bilgilendirilir, takip numarasını Siparişlerim sayfasında görebilirsiniz. [ANLAŞMALI KARGO FİRMASI] · [ORTALAMA TESLİM SÜRESİ]"],
+      ["Teslimat", "Siparişler onaylandıktan sonra hazırlanır ve kargoya verilir. Kargoya verildiğinde e-posta ile bilgilendirilir, takip numarasını Siparişlerim sayfasında görebilirsiniz. Kargo: Geliver · Kargoya veriliş süresi: 1-3 iş günü."],
       ["Kargo Ücreti", "500 ₺ ve üzeri siparişlerde kargo ücretsizdir. Daha düşük tutarlı siparişlerde 49,90 ₺ kargo ücreti uygulanır."],
       ["Hasarlı Teslimat", "Teslimat sırasında paketi kontrol ediniz; hasarlı paketler için kargo görevlisine tutanak tutturarak teslim almayınız ve bize bildiriniz."],
-      ["İade Süreci", "Teslim tarihinden itibaren 14 gün içinde info@lumapetshop.com.tr adresine sipariş numaranızla başvurabilirsiniz. Ürün; kullanılmamış, ambalajı açılmamış ve faturasıyla birlikte gönderilmelidir. [İADE ADRESİ VE ANLAŞMALI İADE KARGO KODU]"],
+      ["İade Süreci", `Teslim tarihinden itibaren 14 gün içinde info@lumapetshop.com.tr adresine sipariş numaranızla başvurabilirsiniz. Ürün; kullanılmamış, ambalajı açılmamış ve faturasıyla birlikte gönderilmelidir. İade adresi: ${ADDR} (LUMA PETSHOP).`],
       ["Para İadesi", "İade ürünü bize ulaştıktan ve kontrol edildikten sonra en geç 14 gün içinde ücret iadesi yapılır. Kapıda ödemeli siparişlerde iade için IBAN bilgisi talep edilir."],
     ],
   },

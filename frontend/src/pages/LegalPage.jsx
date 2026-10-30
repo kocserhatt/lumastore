@@ -1,5 +1,5 @@
 import { Link, useParams } from "react-router-dom";
-import { AlertTriangle, MessageCircle, Mail } from "lucide-react";
+import { MessageCircle, Mail } from "lucide-react";
 import { LEGAL_PAGES, LEGAL_LINKS } from "@/lib/legal";
 import { useStore } from "@/context/StoreContext";
 import { whatsappLink } from "@/lib/shop";
@@ -25,10 +25,6 @@ export default function LegalPage() {
       </nav>
       <article data-testid={`legal-page-${slug}`}>
         <PageTitle kicker="Bilgilendirme" title={page.title} />
-        <div className="mb-6 flex gap-3 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900" data-testid="legal-template-warning">
-          <AlertTriangle className="h-5 w-5 shrink-0" />
-          <span>Bu metin bir şablondur. Sarı ile işaretli alanlar gerçek işletme bilgileriyle doldurulmalı ve yayına almadan önce bir hukuk danışmanı tarafından gözden geçirilmelidir.</span>
-        </div>
         {page.contact && (
           <div className="mb-6 flex flex-wrap gap-3">
             <a href="mailto:info@lumapetshop.com.tr" data-testid="contact-email-link" className="flex items-center gap-2 rounded-full bg-orange-600 px-5 py-3 text-sm font-bold text-white hover:bg-orange-700"><Mail className="h-4 w-4" /> E-posta Gönder</a>

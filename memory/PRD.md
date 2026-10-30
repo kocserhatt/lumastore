@@ -17,6 +17,9 @@ v2 (final production readiness): stok gizleme, değerlendirmeler, çoklu fotoğr
 - 2026-10 v2: everything in v2 list above. Backup: /app/backups/supabase_backup_20261030_160752.json
 - Tests: iteration_1 (MVP), iteration_2 (v2, 14/15 → fixed), iteration_3 (18/18 + UI fixes).
 
+- 2026-10 v3: online-only iyzico (orders blocked with 503 until IYZICO keys set), delivery adres (>=1000 free, else 200) / magaza (free), guest cart (localStorage + /api/cart/quote, merge on login) and guest checkout (access_token protected payment start), payment retry, admin 'Misafir' badge, texts/legal updated, floating WhatsApp button (905389493567, WHATSAPP_NUMBER env default), README + .env.example + vercel.json, .gitignore for .env/backups. Tests iteration_4 (17/17 + UI), iteration_5 (100%).
+- Not possible: Clerk password policy (min 8 + uppercase) — managed Clerk instance stays min 15 until own Clerk account.
+
 ## Backlog
 - P0 before launch: real business info in legal pages + legal review; iyzico keys; custom email domain; remove test orders/accounts
 - P1: invoice/e-Arşiv integration, cargo API tracking links, guest checkout

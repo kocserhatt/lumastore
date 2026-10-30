@@ -1,0 +1,29 @@
+{
+  "summary": "Frontend-only test of the 1.000₺ free-shipping text, the floating WhatsApp button, WhatsApp numbers, cookie banner position and guest checkout notice layout. All items passed at mobile 390x844 and desktop 1920x800.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Home (mobile, first visit)", "issues": ["The cookie banner sits at top:132px and covers the hero badge '1.000₺ üzeri kargo bedava' until the user taps 'Anladım'. This matches the requested design, so it is cosmetic only."]}
+    ]
+  },
+  "verified": [
+    "Home hero badge DOM text '1.000₺ üzeri kargo bedava'. No '500 TL/₺' shipping text on Home, product, cart or checkout. Product page shows '1.000₺ ve üzeri kargo bedava'. Checkout shows '₺1.000,00 ve üzeri ücretsiz, altında ₺200,00'. Backend FREE_SHIPPING_LIMIT=1000.",
+    "whatsapp-fab is visible and on top (elementFromPoint) on /, /kategori/tumu, /urun/<id>, /sepet, /odeme, /sayfa/iletisim, /sign-in (guest) and /favorilerim, /admin (admin). Mobile: right 16px, bottom 80px (136px on the product page). It does not overlap mobile-bottom-nav, sticky-add-bar or cookie-banner. Desktop: 24px/24px. href starts with https://wa.me/905389493567?text=",
+    "cart-whatsapp-button, checkout-whatsapp-link and contact-whatsapp-link all use wa.me/905389493567. The contact page shows 'Telefon: 0538 949 35 67'. GET /api/settings/public returns whatsapp_number 905389493567.",
+    "Cookie banner: desktop bottom-left (x16, y638, w384), does not touch the FAB at x1840. Mobile: top 132px.",
+    "Guest notice at 390px: text span is full width (284px, 3 lines), and the Giriş Yap / Üye Ol buttons wrap onto their own row below it.",
+    "Regression: guest add to cart through sticky-add-to-cart works. Cart 119 + 200 shipping = 319 with an '881 daha ekle' hint. Checkout toggle mağaza → total 119; adres → total 319."
+  ],
+  "test_report_links": [],
+  "action_items": [],
+  "critical_code_review_comments": ["WhatsAppFab hardcodes the mobile bottom offsets (80px / 136px) to match the BottomNav and sticky-bar heights. If those components change height, the FAB could end up overlapping them."],
+  "updated_files": [],
+  "success_rate": {"backend": "skipped (frontend only)", "frontend": "100%"},
+  "test_credentials": "admin user_3LQ7fqlPQupYzh5tlXAE0okqdse signed in via clerk_helper.sign_in_ticket",
+  "seed_data_creation": "None. Admin settings untouched (WhatsApp is still 905389493567). No products or orders created.",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Sign in to the UI with /sign-in?__clerk_ticket=<clerk_helper.sign_in_ticket(uid)>. Set localStorage luma_cookie_notice_v1=1 to skip the cookie banner. To seed a guest cart, set luma_guest_cart=[{product_id,quantity}]. Note: inner_text on uppercase-styled badges returns Turkish uppercase text (İ), so read textContent instead."
+}

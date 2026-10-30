@@ -9,7 +9,7 @@ export const CookieBanner = () => {
   if (!show) return null;
   const accept = () => { localStorage.setItem(KEY, new Date().toISOString()); setShow(false); };
   return (
-    <div className="fixed inset-x-3 top-[132px] z-50 rounded-3xl border border-orange-100 bg-white p-4 shadow-[0_20px_50px_-20px_rgba(0,0,0,0.35)] md:bottom-4 md:left-auto md:right-4 md:top-auto md:max-w-sm" data-testid="cookie-banner">
+    <div className="fixed inset-x-3 top-[132px] z-50 rounded-3xl border border-orange-100 bg-white p-4 shadow-[0_20px_50px_-20px_rgba(0,0,0,0.35)] md:bottom-4 md:left-4 md:right-auto md:top-auto md:max-w-sm" data-testid="cookie-banner">
       <div className="flex gap-3">
         <Cookie className="h-5 w-5 shrink-0 text-orange-600" />
         <p className="text-sm text-zinc-700">

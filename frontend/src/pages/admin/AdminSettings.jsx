@@ -40,7 +40,7 @@ export const AdminSettings = ({ onChange }) => {
           <Label>WhatsApp sipariş numarası</Label>
           <Input inputMode="tel" placeholder="905xxxxxxxxx" className="h-11 rounded-xl" data-testid="settings-whatsapp-input"
             value={form.whatsapp_number} onChange={(e) => setForm({ ...form, whatsapp_number: e.target.value })} />
-          <p className="text-xs text-zinc-500">Ülke koduyla yazın (ör. 905321234567). Boş bırakılırsa WhatsApp butonu gizlenir.</p>
+          <p className="text-xs text-zinc-500">Ülke koduyla yazın (ör. 905389493567). Boş bırakılırsa WhatsApp butonu gizlenir.</p>
         </div>
         <div className="space-y-1.5">
           <Label>Yeni sipariş bildirim e-postası</Label>

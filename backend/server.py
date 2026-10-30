@@ -721,7 +721,7 @@ async def set_role(user_id: str, body: RoleIn, admin: dict = Depends(require_rol
 # ---------- Settings ----------
 async def get_settings(db: AsyncSession) -> dict:
     admins = [e.strip() for e in os.environ.get("ADMIN_EMAIL", "").split(",") if e.strip()]
-    data = {"whatsapp_number": "", "admin_notify_email": admins[0] if admins else "", "low_stock_threshold": "5"}
+    data = {"whatsapp_number": os.environ.get("WHATSAPP_NUMBER", ""), "admin_notify_email": admins[0] if admins else "", "low_stock_threshold": "5"}
     for s in (await db.execute(select(Setting))).scalars().all():
         data[s.key] = s.value
     return data

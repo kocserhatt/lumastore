@@ -1,0 +1,55 @@
+{
+  "summary": "Iteration 4: guest cart/checkout, new shipping rules (adres 200 TL < 1000, free >= 1000; magaza always free), online-only payment gate (iyzico keys absent), guest->member cart merge, admin guest badges, legal/product texts, payment result page, mobile 390px. Backend: new pytest file 17/17 passed. Frontend: all requested flows work; 3 minor issues found (stale '500₺ üzeri kargo bedava' hero badge on Home, WhatsApp number in DB settings is the test value 905321234567 not 905389493567, guest notice text squashed on mobile checkout).",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {"endpoint": "GET /api/settings/public", "issue": "whatsapp_number = 905321234567 (test value set by earlier testing). Review expects wa.me/905389493567; number not present anywhere in code/seed. Update via admin settings (PUT /api/admin/settings)."},
+      {"endpoint": "GET /api/products", "issue": "Leftover test product 'TEST_Ref' (10 TL, stock 5, empty image_url) is publicly listed and shows in cart with broken image; TEST_Iter2/TEST_UI products appear in admin best sellers. Not deleted per instructions - main agent should decide/clean up."}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {"component": "Home hero badge (pages/Home.jsx line 13)", "issue": "Still says '500₺ üzeri kargo bedava' - contradicts new rule (1.000₺). Rendered uppercase so text search for '500₺ üzeri' is case-sensitive-missed.", "selector": "section.grain span.uppercase", "priority": "MEDIUM"}
+    ],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Checkout (guest) mobile 390px", "issues": ["[data-testid=guest-checkout-notice] text 'Üye olmadan sipariş verebilirsin...' is squeezed into ~80px column (one word per line) because the button group sits beside it; make text basis-full / stack buttons below on mobile."]},
+      {"screen": "Cart / admin critical stock", "issues": ["Products with empty image_url render <img src=''> (console warning, broken image icon) - render placeholder instead."]}
+    ]
+  },
+  "passed_features": [
+    "Guest add-to-cart from product cards and product page (no redirect), badge updates, localStorage luma_guest_cart persists after reload",
+    "Guest /sepet +/- and remove; increase beyond stock shows toast 'Bu ürün için yeterli stok yok' and qty stays at stock",
+    "Summary: 200 TL shipping < 1000, 'Ücretsiz' >= 1000 (1.408 TL case)",
+    "Guest /odeme opens, guest-checkout-notice with sign-in/sign-up links (sign-in link -> /sign-in)",
+    "Email field, delivery-adres/delivery-magaza; magaza hides city/address, shows store-pickup-info with store address, shipping Ücretsiz, total=subtotal; adres back to 200 TL",
+    "Single payment box payment-online_kart, no kapıda/nakit text, online-payment-soon + checkout-whatsapp-link, submit disabled 'Online ödeme yakında'",
+    "Backend: /cart/quote public/clamps/drops unknown/422 qty 0; /orders 503 guest+member+magaza; kapida_nakit/kapida_kart 400; bad bearer 401; adres no address 422; invalid delivery 422; settings online_payment_enabled false; iyzico/start 503",
+    "Guest cart merge on sign-in (UI via Clerk ticket): items in server cart, localStorage cleared, email prefilled, no guest notice; /cart/merge keeps max qty, requires auth",
+    "Admin orders: Misafir badge (admin-order-guest-<id>), Mağazadan/Adrese Teslim labels, legacy 'Kapıda Kredi Kartı' labels display, products/users/settings tabs load",
+    "Product page '1.000₺ ve üzeri kargo bedava' + 'Mağazadan teslim her zaman ücretsiz'; /sayfa/iade-ve-teslimat has 1.000 ₺ / 200 ₺ / Mağazadan Teslim section",
+    "/odeme/sonuc?durum=basarisiz shows payment-retry-button (retry -> toast 'Online ödeme henüz aktif değil') and guest link 'Alışverişe devam et'",
+    "Mobile 390: cart, checkout (adres+magaza), admin: scrollWidth=390 (no horizontal overflow); desktop 1920 intact"
+  ],
+  "test_report_links": ["/app/backend/tests/test_iteration4_guest_checkout.py", "/app/test_reports/pytest/iteration4.xml"],
+  "action_items": [
+    "Change Home.jsx hero badge '500₺ üzeri kargo bedava' -> '1.000₺ üzeri kargo bedava'",
+    "Set WhatsApp number to 905389493567 in admin settings (currently test value 905321234567)",
+    "Fix guest-checkout-notice layout on mobile (stack text above buttons)",
+    "Consider removing/hiding leftover TEST_ products (TEST_Ref is public, 10 TL, no image) and render image placeholder when image_url empty",
+    "Update/skip obsolete old tests: test_iteration2_features.py::test_order_flow/test_concurrent_idempotent_submit/test_reviews(verified depends on order), test_iteration3_fixes.py::test_concurrent_same_key, test_petshop_api.py cart/free_shipping/orders_status/delete_product (kapida + public stock assumptions)"
+  ],
+  "critical_code_review_comments": [
+    "CheckoutPage: clearGuestCart() runs before /payments/iyzico/start; if start fails, retry relies on sessionStorage access_token (same tab only) - acceptable but guest loses order access in another tab/device; consider emailing a pay link with token.",
+    "cart_merge: new CartItem quantity min(i.quantity, p.stock) not capped at 99 like the update branch (schema le=99 makes it safe today).",
+    "server.py is 988 lines (>700) - consider splitting cart/orders/admin/payments routers."
+  ],
+  "updated_files": ["/app/backend/tests/test_iteration4_guest_checkout.py"],
+  "success_rate": {"backend": "100% (17/17 new tests)", "frontend": "~93% (all flows functional; 1 stale text, 1 data value, 1 mobile layout)"},
+  "test_credentials": "Admin user_3LQ7fqlPQupYzh5tlXAE0okqdse, member user_3LQ7fquqigC2cVuZVY3ZKoTTjM1 (from /app/memory/test_credentials.md) via clerk_helper session tokens and sign-in tickets.",
+  "seed_data_creation": "None. Member server cart was emptied after merge test. No orders created (iyzico disabled).",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Run `cd /app/backend/tests && python -m pytest test_iteration4_guest_checkout.py` (pytest.ini adds -n xdist; run from tests dir). UI sign-in: /sign-in?__clerk_ticket=<sign_in_ticket(uid)> from clerk_helper (single use). Set localStorage luma_cookie_notice_v1=1 to skip banner; seed guest cart via localStorage luma_guest_cart=[{product_id,quantity}]. Guest orders 4349ed11 (magaza) and fdcfa311 (adres) exist, both cancelled. Old kapida-based tests are obsolete.",
+  "rca of the issue": "Home hero badge text was not updated when FREE_SHIPPING_LIMIT changed from 500 to 1000 (hardcoded string in Home.jsx). WhatsApp link uses DB setting which a prior test iteration set to a placeholder."
+}

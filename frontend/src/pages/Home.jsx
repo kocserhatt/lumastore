@@ -10,7 +10,7 @@ const Hero = () => (
   <section className="grain relative overflow-hidden rounded-[2rem] bg-orange-600 text-white">
     <div className="relative grid gap-6 p-6 sm:p-10 md:grid-cols-[1.1fr_1fr] md:items-center">
       <div className="rise">
-        <span className="inline-block rounded-full bg-white/15 px-3 py-1 text-xs font-bold uppercase tracking-widest">500₺ üzeri kargo bedava</span>
+        <span className="inline-block rounded-full bg-white/15 px-3 py-1 text-xs font-bold uppercase tracking-widest">1.000₺ üzeri kargo bedava</span>
         <h1 className="mt-4 text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-5xl lg:text-6xl">Patili dostların<br />mutlu, karnı tok.</h1>
         <p className="mt-4 max-w-md text-sm text-orange-50 sm:text-base">Mama, oyuncak ve bakım ürünlerinde günün fırsatları. iyzico güvencesiyle online öde, adrese ya da mağazadan teslim al.</p>
         <Link to="/kategori/tumu" data-testid="hero-shop-button" className="mt-6 inline-flex items-center gap-2 rounded-full bg-zinc-900 px-6 py-3.5 text-sm font-bold transition-transform hover:translate-x-1">

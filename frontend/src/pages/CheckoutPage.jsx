@@ -26,7 +26,7 @@ const Choice = ({ active, onClick, icon: Icon, title, text, testId }) => (
 const GuestNotice = () => (
   <div className="flex flex-wrap items-center gap-3 rounded-2xl bg-orange-50/70 p-4 text-sm" data-testid="guest-checkout-notice">
     <UserRound className="h-5 w-5 shrink-0 text-orange-600" />
-    <span className="min-w-0 flex-1">Üye olmadan sipariş verebilirsin. Siparişlerini hesabında takip etmek istersen:</span>
+    <span className="min-w-0 basis-full sm:basis-auto sm:flex-1">Üye olmadan sipariş verebilirsin. Siparişlerini hesabında takip etmek istersen:</span>
     <span className="flex gap-2">
       <Link to="/sign-in" data-testid="checkout-sign-in-link" className="rounded-full bg-white px-4 py-2 text-xs font-bold text-zinc-800 hover:bg-orange-100">Giriş Yap</Link>
       <Link to="/sign-up" data-testid="checkout-sign-up-link" className="rounded-full bg-zinc-900 px-4 py-2 text-xs font-bold text-white hover:bg-zinc-800">Üye Ol</Link>

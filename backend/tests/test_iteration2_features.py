@@ -160,12 +160,12 @@ def test_favorites_price_drop(A, M, test_product):
 def test_settings(A):
     cur = requests.get(f"{API}/admin/settings", headers=A).json()
     assert cur["integrations"] == {"email": True, "storage": True, "iyzico": False}
-    r = requests.put(f"{API}/admin/settings", headers=A, json={"whatsapp_number": "0532 123 45 67",
+    r = requests.put(f"{API}/admin/settings", headers=A, json={"whatsapp_number": "0538 949 35 67",
                      "admin_notify_email": cur["admin_notify_email"], "low_stock_threshold": cur["low_stock_threshold"]})
-    assert r.json()["whatsapp_number"] == "905321234567"
+    assert r.json()["whatsapp_number"] == "905389493567"
     assert requests.put(f"{API}/admin/settings", headers=A, json={"whatsapp_number": "12"}).status_code == 400
     pub = requests.get(f"{API}/settings/public").json()
-    assert pub == {"whatsapp_number": "905321234567", "online_payment_enabled": False}
+    assert pub == {"whatsapp_number": "905389493567", "online_payment_enabled": False}
     assert requests.get(f"{API}/payments/iyzico/status").json()["enabled"] is False
 
 

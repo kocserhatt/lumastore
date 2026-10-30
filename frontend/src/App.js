@@ -13,6 +13,7 @@ import FavoritesPage from "@/pages/FavoritesPage";
 import PaymentResult from "@/pages/PaymentResult";
 import LegalPage from "@/pages/LegalPage";
 import { CookieBanner } from "@/components/CookieBanner";
+import { WhatsAppFab } from "@/components/WhatsAppFab";
 import { LEGAL_LINKS } from "@/lib/legal";
 import { Link } from "react-router-dom";
 import CartPage from "@/pages/CartPage";
@@ -56,6 +57,7 @@ function App() {
             </main>
             <BottomNav />
             <CookieBanner />
+            <WhatsAppFab />
             <Toaster position="top-center" richColors />
           </StoreProvider>
         </ClerkAuthProvider>

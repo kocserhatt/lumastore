@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import axios from "axios";
-import { Minus, Plus, Star, ChevronLeft, Truck, Banknote } from "lucide-react";
+import { Minus, Plus, Star, ChevronLeft, Truck, Store } from "lucide-react";
 import { useStore } from "@/context/StoreContext";
 import { discountPct } from "@/components/ProductCard";
 import { FavoriteButton } from "@/components/FavoriteButton";
@@ -101,8 +101,8 @@ export default function ProductPage() {
             {addBtn("detail-add-to-cart")}
           </div>
           <div className="mt-6 grid gap-2 text-sm sm:grid-cols-2">
-            <div className="flex items-center gap-3 rounded-2xl bg-green-50 p-4 text-green-900"><Truck className="h-5 w-5 shrink-0" /> 500₺ ve üzeri kargo bedava</div>
-            <div className="flex items-center gap-3 rounded-2xl bg-orange-50 p-4 text-orange-900"><Banknote className="h-5 w-5 shrink-0" /> Kapıda nakit / kartla ödeme</div>
+            <div className="flex items-center gap-3 rounded-2xl bg-green-50 p-4 text-green-900"><Truck className="h-5 w-5 shrink-0" /> 1.000₺ ve üzeri kargo bedava</div>
+            <div className="flex items-center gap-3 rounded-2xl bg-orange-50 p-4 text-orange-900"><Store className="h-5 w-5 shrink-0" /> Mağazadan teslim her zaman ücretsiz</div>
           </div>
         </div>
       </div>

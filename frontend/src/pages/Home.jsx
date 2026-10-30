@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
-import { ArrowRight, Truck, ShieldCheck, Banknote } from "lucide-react";
+import { ArrowRight, Truck, ShieldCheck, Store } from "lucide-react";
 import { ProductGrid } from "@/components/ProductCard";
 import { API, CATEGORY_META, HERO_IMG } from "@/lib/shop";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -12,7 +12,7 @@ const Hero = () => (
       <div className="rise">
         <span className="inline-block rounded-full bg-white/15 px-3 py-1 text-xs font-bold uppercase tracking-widest">500₺ üzeri kargo bedava</span>
         <h1 className="mt-4 text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-5xl lg:text-6xl">Patili dostların<br />mutlu, karnı tok.</h1>
-        <p className="mt-4 max-w-md text-sm text-orange-50 sm:text-base">Mama, oyuncak ve bakım ürünlerinde günün fırsatları. Kapıda ödeme ile güvenle alışveriş yap.</p>
+        <p className="mt-4 max-w-md text-sm text-orange-50 sm:text-base">Mama, oyuncak ve bakım ürünlerinde günün fırsatları. iyzico güvencesiyle online öde, adrese ya da mağazadan teslim al.</p>
         <Link to="/kategori/tumu" data-testid="hero-shop-button" className="mt-6 inline-flex items-center gap-2 rounded-full bg-zinc-900 px-6 py-3.5 text-sm font-bold transition-transform hover:translate-x-1">
           Alışverişe Başla <ArrowRight className="h-4 w-4" />
         </Link>
@@ -43,7 +43,7 @@ const CategoryStrip = () => (
 
 const Trust = () => (
   <section className="mt-12 grid gap-3 sm:grid-cols-3">
-    {[[Truck, "Hızlı Teslimat", "Siparişler 1-3 iş gününde kapında"], [Banknote, "Kapıda Ödeme", "Nakit veya kartla teslimatta öde"], [ShieldCheck, "Güvenli Alışveriş", "Orijinal ve garantili ürünler"]].map(([Icon, t, d]) => (
+    {[[Truck, "Hızlı Teslimat", "Siparişler 1-3 iş gününde kapında"], [Store, "Mağazadan Teslim", "Bağcılar mağazamızdan ücretsiz teslim al"], [ShieldCheck, "Güvenli Alışveriş", "Orijinal ve garantili ürünler"]].map(([Icon, t, d]) => (
       <div key={t} className="flex items-center gap-4 rounded-3xl bg-green-50 p-5">
         <span className="grid h-12 w-12 place-items-center rounded-2xl bg-green-700 text-white"><Icon className="h-5 w-5" /></span>
         <div><div className="font-bold text-zinc-900">{t}</div><div className="text-sm text-zinc-600">{d}</div></div>

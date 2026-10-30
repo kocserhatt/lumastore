@@ -33,6 +33,7 @@ export const nextStatuses = (cur) => {
 };
 
 export const PAYMENT_LABELS = { kapida_nakit: "Kapıda Nakit", kapida_kart: "Kapıda Kredi Kartı", online_kart: "Online Kart (iyzico)" };
+export const DELIVERY_LABELS = { adres: "Adrese Teslim", magaza: "Mağazadan Teslim" };
 export const PAYMENT_STATUS = {
   odenmedi: "Teslimatta ödenecek", bekliyor: "Ödeme bekleniyor", odendi: "Ödendi",
   basarisiz: "Ödeme başarısız", inceleniyor: "Ödeme inceleniyor",
@@ -49,6 +50,6 @@ export const formatDate = (iso) =>
 export const errMsg = (e) => {
   const d = e?.response?.data?.detail;
   if (typeof d === "string") return d;
-  if (Array.isArray(d)) return "Lütfen bilgileri kontrol edin";
+  if (Array.isArray(d)) return (d[0]?.msg || "").replace(/^Value error, /, "") || "Lütfen bilgileri kontrol edin";
   return "Bir hata oluştu, tekrar deneyin";
 };

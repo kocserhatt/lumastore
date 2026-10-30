@@ -8,7 +8,7 @@ export const LEGAL_PAGES = {
     title: "Hakkımızda",
     sections: [
       ["Luma Petshop", "Luma Petshop; köpek, kedi, kuş, balık ve kemirgen dostlarımız için mama, oyuncak, aksesuar ve bakım ürünleri sunan bir çevrim içi evcil hayvan mağazasıdır."],
-      ["Neden Luma?", "Ürünlerimizi güvenilir tedarikçilerden temin eder, siparişlerinizi özenle paketler ve hızlı teslimat için çalışırız. Kapıda nakit veya kartla ödeme seçenekleri sunarız."],
+      ["Neden Luma?", "Ürünlerimizi güvenilir tedarikçilerden temin eder, siparişlerinizi özenle paketler ve hızlı teslimat için çalışırız. Ödemeler iyzico güvencesiyle online kredi/banka kartı ile alınır; siparişinizi adresinize gönderir ya da mağazamızdan teslim edebiliriz."],
       ["Şirket Bilgileri", `Unvan: ${S}\nAdres: ${ADDR}\n${VKN}\nTelefon: ${TEL}`],
     ],
   },
@@ -51,8 +51,8 @@ export const LEGAL_PAGES = {
     sections: [
       ["1. Taraflar", `SATICI: ${S}\nAdres: ${ADDR}\nTelefon: ${TEL}\nE-posta: info@lumapetshop.com.tr\n${VKN}\n\nALICI: Sipariş sırasında bilgileri girilen müşteri.`],
       ["2. Konu", "Bu sözleşme, 6502 sayılı Tüketicinin Korunması Hakkında Kanun ve Mesafeli Sözleşmeler Yönetmeliği uyarınca, ALICI'nın internet sitesi üzerinden elektronik ortamda sipariş verdiği ürünlerin satışı ve teslimine ilişkin tarafların hak ve yükümlülüklerini düzenler."],
-      ["3. Ürün, Fiyat ve Ödeme", "Ürünlerin cinsi, miktarı, KDV dahil satış fiyatı, kargo ücreti ve ödeme şekli sipariş özetinde ve ALICI'ya gönderilen sipariş onay e-postasında yer alır. Ödeme; kapıda nakit, kapıda kredi kartı veya aktif olduğunda online kart ödemesi ile yapılır."],
-      ["4. Teslimat", "Ürünler, ALICI'nın belirttiği adrese en geç 30 gün içinde kargo ile teslim edilir. Siparişler onaylandıktan sonra 1-3 iş günü içinde Geliver aracılığıyla kargoya verilir. 500 ₺ ve üzeri siparişlerde kargo ücretsizdir; altındaki siparişlerde kargo ücreti sipariş özetinde gösterilir."],
+      ["3. Ürün, Fiyat ve Ödeme", "Ürünlerin cinsi, miktarı, KDV dahil satış fiyatı, kargo ücreti ve ödeme şekli sipariş özetinde ve ALICI'ya gönderilen sipariş onay e-postasında yer alır. Ödeme, lisanslı ödeme kuruluşu iyzico altyapısı üzerinden online kredi/banka kartı ile yapılır; kart bilgileri SATICI tarafından saklanmaz."],
+      ["4. Teslimat", "Ürünler, ALICI'nın belirttiği adrese en geç 30 gün içinde kargo ile teslim edilir. Siparişler onaylandıktan sonra 1-3 iş günü içinde Geliver aracılığıyla kargoya verilir. Adrese teslimde 1.000 ₺ ve üzeri siparişlerde kargo ücretsizdir, altındaki siparişlerde 200 ₺ kargo ücreti uygulanır. ALICI dilerse ürünü SATICI'nın mağazasından ücretsiz teslim alabilir."],
       ["5. Cayma Hakkı", "ALICI, ürünü teslim aldığı tarihten itibaren 14 gün içinde herhangi bir gerekçe göstermeksizin ve cezai şart ödemeksizin cayma hakkını kullanabilir. Cayma bildirimi info@lumapetshop.com.tr adresine yapılır. Bedel, iade ürünün SATICI'ya ulaşmasından itibaren en geç 14 gün içinde ödeme yöntemine uygun şekilde iade edilir."],
       ["6. Cayma Hakkının İstisnaları", "Ambalajı açılmış, kullanılmış veya hijyen açısından iadesi uygun olmayan ürünler (ör. açılmış mama, ödül maması, bakım ürünleri), çabuk bozulabilen veya son kullanma tarihi geçebilecek ürünler Yönetmelik m.15 uyarınca cayma hakkı kapsamı dışındadır."],
       ["7. Uyuşmazlık", "Uyuşmazlıklarda, Ticaret Bakanlığı'nca ilan edilen parasal sınırlar dahilinde ALICI'nın yerleşim yerindeki Tüketici Hakem Heyetleri veya Tüketici Mahkemeleri yetkilidir."],
@@ -63,10 +63,11 @@ export const LEGAL_PAGES = {
     title: "İade ve Teslimat Koşulları",
     sections: [
       ["Teslimat", "Siparişler onaylandıktan sonra hazırlanır ve kargoya verilir. Kargoya verildiğinde e-posta ile bilgilendirilir, takip numarasını Siparişlerim sayfasında görebilirsiniz. Kargo: Geliver · Kargoya veriliş süresi: 1-3 iş günü."],
-      ["Kargo Ücreti", "500 ₺ ve üzeri siparişlerde kargo ücretsizdir. Daha düşük tutarlı siparişlerde 49,90 ₺ kargo ücreti uygulanır."],
+      ["Kargo Ücreti", "Adrese teslimde 1.000 ₺ ve üzeri siparişlerde kargo ücretsizdir. Daha düşük tutarlı siparişlerde 200 ₺ kargo ücreti uygulanır."],
+      ["Mağazadan Teslim", `Siparişinizi ${ADDR} adresindeki mağazamızdan her zaman ücretsiz teslim alabilirsiniz. Siparişiniz hazır olduğunda e-posta ile bilgilendirilirsiniz.`],
       ["Hasarlı Teslimat", "Teslimat sırasında paketi kontrol ediniz; hasarlı paketler için kargo görevlisine tutanak tutturarak teslim almayınız ve bize bildiriniz."],
       ["İade Süreci", `Teslim tarihinden itibaren 14 gün içinde info@lumapetshop.com.tr adresine sipariş numaranızla başvurabilirsiniz. Ürün; kullanılmamış, ambalajı açılmamış ve faturasıyla birlikte gönderilmelidir. İade adresi: ${ADDR} (LUMA PETSHOP).`],
-      ["Para İadesi", "İade ürünü bize ulaştıktan ve kontrol edildikten sonra en geç 14 gün içinde ücret iadesi yapılır. Kapıda ödemeli siparişlerde iade için IBAN bilgisi talep edilir."],
+      ["Para İadesi", "İade ürünü bize ulaştıktan ve kontrol edildikten sonra en geç 14 gün içinde ücret iadesi yapılır. Ücret iadesi, ödemenin yapıldığı karta iyzico üzerinden yapılır."],
     ],
   },
   "cerez-politikasi": {

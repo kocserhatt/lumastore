@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Phone, MapPin } from "lucide-react";
 import { useStore } from "@/context/StoreContext";
-import { STATUS_META, PAYMENT_LABELS, PAYMENT_STATUS, formatTL, formatDate, errMsg, nextStatuses } from "@/lib/shop";
+import { STATUS_META, PAYMENT_LABELS, PAYMENT_STATUS, DELIVERY_LABELS, formatTL, formatDate, errMsg, nextStatuses } from "@/lib/shop";
 import { OrderItems, StatusBadge, OrderTimeline } from "@/pages/OrdersPage";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
@@ -42,7 +42,10 @@ const OrderCard = ({ o, onPick }) => {
     <article data-testid={`admin-order-card-${o.id}`} className="rounded-3xl border border-orange-100 bg-white p-5">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0">
-          <div className="font-display font-bold">#{o.code} · {o.customer_name}</div>
+          <div className="flex flex-wrap items-center gap-2 font-display font-bold">#{o.code} · {o.customer_name}
+            {o.is_guest && <span className="rounded-full bg-sky-100 px-2 py-0.5 text-[11px] font-bold text-sky-800" data-testid={`admin-order-guest-${o.id}`}>Misafir</span>}
+            <span className="rounded-full bg-orange-100 px-2 py-0.5 text-[11px] font-bold text-orange-800">{DELIVERY_LABELS[o.delivery_method] || "Adrese Teslim"}</span>
+          </div>
           <div className="text-xs text-zinc-500">{formatDate(o.created_at)} · {PAYMENT_LABELS[o.payment_method]} · {PAYMENT_STATUS[o.payment_status]}</div>
         </div>
         <StatusBadge status={o.status} testId={`admin-order-status-${o.id}`} />

@@ -3,7 +3,7 @@ import { useSearchParams } from "react-router-dom";
 import { Package, PartyPopper } from "lucide-react";
 import { useStore } from "@/context/StoreContext";
 import { EmptyState, PageTitle } from "@/components/Common";
-import { STATUS_META, PAYMENT_LABELS, PAYMENT_STATUS, formatTL, formatDate } from "@/lib/shop";
+import { STATUS_META, PAYMENT_LABELS, PAYMENT_STATUS, DELIVERY_LABELS, formatTL, formatDate } from "@/lib/shop";
 
 export const OrderTimeline = ({ events = [] }) => (
   <details className="group mt-3 text-sm">
@@ -60,7 +60,7 @@ export default function OrdersPage() {
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div>
                 <div className="font-display font-bold">#{o.id.slice(0, 8).toUpperCase()}</div>
-                <div className="text-xs text-zinc-500">{formatDate(o.created_at)} · {PAYMENT_LABELS[o.payment_method]}</div>
+                <div className="text-xs text-zinc-500">{formatDate(o.created_at)} · {PAYMENT_LABELS[o.payment_method]} · {DELIVERY_LABELS[o.delivery_method] || "Adrese Teslim"}</div>
               </div>
               <StatusBadge status={o.status} testId={`order-status-${o.id}`} />
             </div>

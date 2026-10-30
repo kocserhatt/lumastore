@@ -174,10 +174,15 @@ def tpl_order_customer(order, link):
     return f"Siparişiniz alındı #{order_code(order)}", _wrap("Siparişiniz alındı", inner, link)
 
 
+PAY_LABELS = {"online_kart": "Online Kart (iyzico)", "kapida_nakit": "Kapıda Nakit", "kapida_kart": "Kapıda Kart"}
+DELIVERY_LABELS = {"adres": "Adrese Teslim", "magaza": "Mağazadan Teslim"}
+
+
 def tpl_order_admin(order, link):
     inner = (f'<p>Yeni sipariş: <b>#{order_code(order)}</b> — {escape(order.customer_name)} '
              f'({escape(order.customer_phone)})</p>{_items_table(order)}'
-             f'<p style="font-size:14px">Ödeme: {escape(order.payment_method)}</p>')
+             f'<p style="font-size:14px">Ödeme: {PAY_LABELS.get(order.payment_method, order.payment_method)} · '
+             f'Teslimat: {DELIVERY_LABELS.get(order.delivery_method, "Adrese Teslim")}</p>')
     return f"Yeni sipariş #{order_code(order)}", _wrap("Yeni sipariş bildirimi", inner, link)
 
 

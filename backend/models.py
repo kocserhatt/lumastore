@@ -96,14 +96,16 @@ class CartItem(Base):
 class Order(Base):
     __tablename__ = 'orders'
     id = Column(String(36), primary_key=True, default=gen_id)
-    user_id = Column(String(64), nullable=False, index=True)
+    user_id = Column(String(64), nullable=True, index=True)
     customer_name = Column(String(255), nullable=False)
     customer_email = Column(String(255))
     customer_phone = Column(String(32), nullable=False)
     city = Column(String(64), nullable=False)
     delivery_address = Column(Text, nullable=False)
     note = Column(Text, default='')
-    payment_method = Column(String(32), nullable=False, default='kapida_nakit')
+    payment_method = Column(String(32), nullable=False, default='online_kart')
+    delivery_method = Column(String(16), nullable=False, server_default=text("'adres'"), default='adres')
+    access_token = Column(String(64))
     subtotal = Column(Numeric(10, 2), nullable=False)
     shipping_fee = Column(Numeric(10, 2), nullable=False)
     total_amount = Column(Numeric(10, 2), nullable=False)

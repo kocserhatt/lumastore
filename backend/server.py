@@ -10,7 +10,7 @@ from zoneinfo import ZoneInfo
 import requests
 from fastapi import FastAPI, APIRouter, Depends, HTTPException, Request, BackgroundTasks, UploadFile, File
 from fastapi.responses import RedirectResponse
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, EmailStr, Field, model_validator
 from sqlalchemy import select, func, delete, update, cast, String
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -51,10 +51,19 @@ STATUS_LABELS = {"beklemede": "Bekliyor", "onaylandi": "Onaylandı", "hazirlaniy
 STATUS_RANK = {s: i for i, s in enumerate(ORDER_STATUSES[:-1])}
 FINAL_STATUSES = {"teslim_edildi", "iptal"}
 CANCELLABLE = {"beklemede", "onaylandi", "hazirlaniyor"}
-PAYMENT_METHODS = ["kapida_nakit", "kapida_kart", "online_kart"]
+PAYMENT_METHODS = ["online_kart"]
 TZ = ZoneInfo("Europe/Istanbul")
-FREE_SHIPPING_LIMIT = Decimal("500")
-SHIPPING_FEE = Decimal("49.90")
+FREE_SHIPPING_LIMIT = Decimal("1000")
+SHIPPING_FEE = Decimal("200")
+DELIVERY_METHODS = {"adres": "Adrese Teslim", "magaza": "Mağazadan Teslim"}
+STORE_ADDRESS = "Göztepe Mah. Maslak Cad. No:7 Dükkan No:122 Luxera, Bağcılar"
+STORE_CITY = "İstanbul"
+
+
+def shipping_for(subtotal: Decimal, delivery: str = "adres") -> Decimal:
+    if delivery == "magaza" or not subtotal or subtotal >= FREE_SHIPPING_LIMIT:
+        return Decimal("0")
+    return SHIPPING_FEE
 
 # Roles (code-defined)
 ROLES = ["admin", "member"]
@@ -108,6 +117,12 @@ async def current_member(user: dict = Depends(require_user), db: AsyncSession = 
     return {"user_id": uid, "email": member.email, "role": effective_role(member.role), "env": ENV}
 
 
+async def optional_member(request: Request, db: AsyncSession = Depends(get_db)) -> Optional[dict]:
+    if not request.headers.get("authorization") and not request.cookies.get("__session"):
+        return None
+    return await current_member(require_user(request), db)
+
+
 def require_role(*roles: str):
     async def check(member: dict = Depends(current_member)) -> dict:
         if member["role"] not in roles:
@@ -141,6 +156,7 @@ def order_out(o: Order) -> dict:
     return {"id": o.id, "code": o.id[:8].upper(), "user_id": o.user_id, "customer_name": o.customer_name,
             "customer_email": o.customer_email, "customer_phone": o.customer_phone, "city": o.city,
             "delivery_address": o.delivery_address, "note": o.note, "payment_method": o.payment_method,
+            "delivery_method": o.delivery_method, "is_guest": o.user_id is None,
             "payment_status": o.payment_status, "subtotal": f(o.subtotal), "shipping_fee": f(o.shipping_fee),
             "total_amount": f(o.total_amount), "status": o.status, "tracking_number": o.tracking_number,
             "cargo_company": o.cargo_company, "created_at": iso(o.created_at), "updated_at": iso(o.updated_at),
@@ -182,15 +198,30 @@ class CartUpdate(BaseModel):
     quantity: int = Field(ge=1, le=99)
 
 
+class CartQuote(BaseModel):
+    items: List[CartAdd] = Field(default_factory=list, max_length=50)
+
+
 class CheckoutIn(BaseModel):
     customer_name: str = Field(min_length=2, max_length=255)
+    customer_email: EmailStr
     customer_phone: str = Field(min_length=10, max_length=32)
-    city: str = Field(min_length=2, max_length=64)
-    delivery_address: str = Field(min_length=10)
+    delivery_method: str = "adres"
+    city: str = Field(default="", max_length=64)
+    delivery_address: str = Field(default="", max_length=1000)
     note: str = Field(default="", max_length=500)
-    payment_method: str = "kapida_nakit"
+    payment_method: str = "online_kart"
     terms_accepted: bool = False
     idempotency_key: Optional[str] = Field(default=None, min_length=8, max_length=64)
+    items: List[CartAdd] = Field(default_factory=list, max_length=50)
+
+    @model_validator(mode="after")
+    def _delivery(self):
+        if self.delivery_method not in DELIVERY_METHODS:
+            raise ValueError("Geçersiz teslimat yöntemi")
+        if self.delivery_method == "adres" and (len(self.city.strip()) < 2 or len(self.delivery_address.strip()) < 10):
+            raise ValueError("Adrese teslim için şehir ve açık adres gerekli")
+        return self
 
 
 class StatusIn(BaseModel):
@@ -218,6 +249,7 @@ class SettingsIn(BaseModel):
 
 class PaymentStart(BaseModel):
     order_id: str
+    access_token: Optional[str] = Field(default=None, max_length=64)
 
 
 # ---------- Public ----------
@@ -268,11 +300,44 @@ async def me(member: dict = Depends(current_member)):
 async def _cart(db: AsyncSession, uid: str):
     rows = (await db.execute(select(CartItem).options(selectinload(CartItem.product))
                              .where(CartItem.user_id == uid).order_by(CartItem.created_at))).scalars().all()
-    items = [{"id": c.id, "quantity": c.quantity, "product": product_out(c.product)} for c in rows]
-    subtotal = sum(Decimal(str(i["product"]["price"])) * i["quantity"] for i in items)
-    shipping = Decimal("0") if subtotal >= FREE_SHIPPING_LIMIT or not items else SHIPPING_FEE
+    return cart_out([(c.id, c.product, c.quantity) for c in rows])
+
+
+def cart_out(lines) -> dict:
+    items = [{"id": lid, "quantity": q, "product": product_out(p)} for lid, p, q in lines]
+    subtotal = sum((p.price * q for _, p, q in lines), Decimal("0"))
+    shipping = shipping_for(subtotal)
     return {"items": items, "subtotal": float(subtotal), "shipping_fee": float(shipping),
-            "total": float(subtotal + shipping), "free_shipping_limit": float(FREE_SHIPPING_LIMIT)}
+            "total": float(subtotal + shipping), "free_shipping_limit": float(FREE_SHIPPING_LIMIT),
+            "shipping_fee_standard": float(SHIPPING_FEE), "store_address": f"{STORE_ADDRESS}/{STORE_CITY}"}
+
+
+@api.post("/cart/quote")
+async def cart_quote(body: CartQuote, db: AsyncSession = Depends(get_db)):
+    """Guest cart pricing: quantities clamped to stock, unknown/out-of-stock products dropped."""
+    ids = list(dict.fromkeys(i.product_id for i in body.items))
+    prods = {p.id: p for p in (await db.execute(select(Product).where(Product.id.in_(ids)))).scalars().all()} if ids else {}
+    qty = {}
+    for i in body.items:
+        qty[i.product_id] = qty.get(i.product_id, 0) + i.quantity
+    lines = [(pid, prods[pid], min(qty[pid], prods[pid].stock, 99)) for pid in ids if pid in prods and prods[pid].stock > 0]
+    return cart_out(lines)
+
+
+@api.post("/cart/merge")
+async def cart_merge(body: CartQuote, member: dict = Depends(current_member), db: AsyncSession = Depends(get_db)):
+    for i in body.items:
+        p = await db.get(Product, i.product_id)
+        if not p or p.stock <= 0:
+            continue
+        item = (await db.execute(select(CartItem).where(CartItem.user_id == member["user_id"],
+                                                        CartItem.product_id == p.id))).scalar_one_or_none()
+        if item:
+            item.quantity = min(max(item.quantity, i.quantity), p.stock, 99)
+        else:
+            db.add(CartItem(user_id=member["user_id"], product_id=p.id, quantity=min(i.quantity, p.stock)))
+    await db.commit()
+    return await _cart(db, member["user_id"])
 
 
 @api.get("/cart")
@@ -336,61 +401,76 @@ async def load_order(db: AsyncSession, order_id: str, lock: bool = False, **wher
     return (await db.execute(stmt)).scalar_one_or_none()
 
 
-async def _order_by_key(db: AsyncSession, uid: str, key: Optional[str]) -> Optional[Order]:
+async def _order_by_key(db: AsyncSession, uid: Optional[str], key: Optional[str]) -> Optional[Order]:
     if not key:
         return None
-    o = (await db.execute(select(Order.id).where(Order.idempotency_key == key, Order.user_id == uid))).scalar()
+    owner = Order.user_id == uid if uid else Order.user_id.is_(None)
+    o = (await db.execute(select(Order.id).where(Order.idempotency_key == key, owner))).scalar()
     return await load_order(db, o) if o else None
 
 
 async def notify_new_order(order: Order, base: Optional[str]):
     async with AsyncSessionLocal() as db:
         s = await get_settings(db)
-    link = f"{base}/siparislerim" if base else None
+    link = (f"{base}/siparislerim" if order.user_id else base) if base else None
     await emails.safe_send(order.customer_email, *emails.tpl_order_customer(order, link))
     await emails.safe_send(s["admin_notify_email"], *emails.tpl_order_admin(order, f"{base}/admin" if base else None))
 
 
 @api.post("/orders")
 async def create_order(body: CheckoutIn, request: Request, bg: BackgroundTasks,
-                       member: dict = Depends(current_member), db: AsyncSession = Depends(get_db)):
+                       member: Optional[dict] = Depends(optional_member), db: AsyncSession = Depends(get_db)):
     if body.payment_method not in PAYMENT_METHODS:
         raise HTTPException(400, "Geçersiz ödeme yöntemi")
-    if body.payment_method == "online_kart" and not iyzico_enabled():
-        raise HTTPException(400, "Online kart ödemesi henüz aktif değil")
+    if not iyzico_enabled():
+        raise HTTPException(503, "Online ödeme henüz aktif değil")
     if not body.terms_accepted:
         raise HTTPException(400, "Mesafeli satış sözleşmesini onaylamanız gerekiyor")
-    uid = member["user_id"]
+    uid = member["user_id"] if member else None
     existing = await _order_by_key(db, uid, body.idempotency_key)
     if existing:
-        return order_out(existing)
-    rows = (await db.execute(select(CartItem).options(selectinload(CartItem.product))
-                             .where(CartItem.user_id == uid).with_for_update(of=CartItem))).scalars().all()
-    if not rows:
+        return {**order_out(existing), "access_token": existing.access_token}
+    if member:
+        rows = (await db.execute(select(CartItem).where(CartItem.user_id == uid)
+                                 .with_for_update(of=CartItem))).scalars().all()
+        wanted = [(c.product_id, c.quantity) for c in rows]
+    else:
+        rows, qty = [], {}
+        for i in body.items:
+            qty[i.product_id] = qty.get(i.product_id, 0) + i.quantity
+        wanted = list(qty.items())
+    if not wanted:
         existing = await _order_by_key(db, uid, body.idempotency_key)
         if existing:
-            return order_out(existing)
+            return {**order_out(existing), "access_token": existing.access_token}
         raise HTTPException(400, "Sepetiniz boş")
-    locked = (await db.execute(select(Product).where(Product.id.in_([c.product_id for c in rows]))
-                               .with_for_update())).scalars().all()
-    for p in locked:
-        await db.refresh(p)
+    locked = {p.id: p for p in (await db.execute(select(Product).where(Product.id.in_([w[0] for w in wanted]))
+                                                 .with_for_update().execution_options(populate_existing=True))).scalars().all()}
     subtotal = Decimal("0")
-    for c in rows:
-        if c.quantity > c.product.stock:
-            raise HTTPException(400, f"{c.product.name} için yeterli stok yok")
-        subtotal += c.product.price * c.quantity
-    shipping = Decimal("0") if subtotal >= FREE_SHIPPING_LIMIT else SHIPPING_FEE
-    online = body.payment_method == "online_kart"
-    order = Order(user_id=uid, customer_email=member["email"], subtotal=subtotal, shipping_fee=shipping,
+    for pid, q in wanted:
+        p = locked.get(pid)
+        if not p:
+            raise HTTPException(400, "Sepetteki bir ürün artık satışta değil")
+        if q > p.stock:
+            raise HTTPException(400, f"{p.name} için yeterli stok yok")
+        subtotal += p.price * q
+    shipping = shipping_for(subtotal, body.delivery_method)
+    data = body.model_dump(exclude={"idempotency_key", "terms_accepted", "items"})
+    if member and member.get("email") and not data.get("customer_email"):
+        data["customer_email"] = member["email"]
+    if body.delivery_method == "magaza":
+        data.update(city=STORE_CITY, delivery_address=f"Mağazadan teslim: {STORE_ADDRESS}")
+    order = Order(user_id=uid, subtotal=subtotal, shipping_fee=shipping,
                   total_amount=subtotal + shipping, status="beklemede", terms_accepted=True,
-                  payment_status="bekliyor" if online else "odenmedi", idempotency_key=body.idempotency_key,
-                  **body.model_dump(exclude={"idempotency_key", "terms_accepted"}))
-    order.events.append(OrderEvent(status="beklemede", note="Sipariş oluşturuldu"))
+                  payment_status="bekliyor", idempotency_key=body.idempotency_key,
+                  access_token=None if member else uuid4().hex, **data)
+    order.events.append(OrderEvent(status="beklemede", note="Sipariş oluşturuldu, ödeme bekleniyor"))
+    for pid, q in wanted:
+        p = locked[pid]
+        order.items.append(OrderItem(product_id=p.id, product_name=p.name, price=p.price,
+                                     quantity=q, image_url=p.image_url))
+        p.stock -= q
     for c in rows:
-        order.items.append(OrderItem(product_id=c.product.id, product_name=c.product.name, price=c.product.price,
-                                     quantity=c.quantity, image_url=c.product.image_url))
-        c.product.stock -= c.quantity
         await db.delete(c)
     db.add(order)
     try:
@@ -399,12 +479,10 @@ async def create_order(body: CheckoutIn, request: Request, bg: BackgroundTasks,
         await db.rollback()
         existing = await _order_by_key(db, uid, body.idempotency_key)
         if existing:
-            return order_out(existing)
+            return {**order_out(existing), "access_token": existing.access_token}
         raise HTTPException(409, "Sipariş zaten işleniyor")
     order = await load_order(db, order.id)
-    if not online:
-        bg.add_task(notify_new_order, order, app_base(request))
-    return order_out(order)
+    return {**order_out(order), "access_token": order.access_token}
 
 
 @api.get("/orders")
@@ -584,7 +662,7 @@ async def restore_stock(db: AsyncSession, o: Order):
 async def notify_status(order_id: str, base: Optional[str]):
     async with AsyncSessionLocal() as db:
         o = await load_order(db, order_id)
-    link = f"{base}/siparislerim" if base else None
+    link = (f"{base}/siparislerim" if o.user_id else base) if base else None
     await emails.safe_send(o.customer_email, *emails.tpl_status(o, STATUS_LABELS[o.status], link))
 
 
@@ -838,12 +916,14 @@ async def iyzico_status():
 
 
 @api.post("/payments/iyzico/start")
-async def iyzico_start(body: PaymentStart, request: Request, member: dict = Depends(current_member),
+async def iyzico_start(body: PaymentStart, request: Request, member: Optional[dict] = Depends(optional_member),
                        db: AsyncSession = Depends(get_db)):
     if not iyzico_enabled():
         raise HTTPException(503, "Online ödeme henüz aktif değil")
-    o = await load_order(db, body.order_id, lock=True, user_id=member["user_id"])
-    if not o or o.payment_method != "online_kart":
+    o = await load_order(db, body.order_id, lock=True)
+    owner = (member and o and o.user_id == member["user_id"]) or (
+        o and o.user_id is None and o.access_token and body.access_token == o.access_token)
+    if not owner or o.payment_method != "online_kart":
         raise HTTPException(404, "Sipariş bulunamadı")
     if o.payment_status not in ("bekliyor", "basarisiz") or o.status != "beklemede":
         raise HTTPException(409, "Bu sipariş için ödeme alınamaz")

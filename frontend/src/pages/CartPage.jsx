@@ -4,7 +4,7 @@ import { useStore } from "@/context/StoreContext";
 import { EmptyState, PageTitle } from "@/components/Common";
 import { formatTL, whatsappLink } from "@/lib/shop";
 
-export const OrderSummary = ({ cart, children }) => {
+export const OrderSummary = ({ cart, children, hideFreeHint }) => {
   const remaining = cart.free_shipping_limit - cart.subtotal;
   return (
     <aside className="h-fit rounded-3xl border border-orange-100 bg-white p-5 md:sticky md:top-24" data-testid="order-summary">
@@ -14,7 +14,7 @@ export const OrderSummary = ({ cart, children }) => {
         <div className="flex justify-between"><dt className="text-zinc-500">Kargo</dt><dd data-testid="summary-shipping">{cart.shipping_fee ? formatTL(cart.shipping_fee) : "Ücretsiz"}</dd></div>
         <div className="flex justify-between border-t border-dashed border-orange-200 pt-3 text-base font-bold"><dt>Toplam</dt><dd data-testid="summary-total">{formatTL(cart.total)}</dd></div>
       </dl>
-      {remaining > 0 && <p className="mt-3 rounded-2xl bg-amber-50 p-3 text-xs text-amber-900">Ücretsiz kargo için {formatTL(remaining)} daha ekle.</p>}
+      {remaining > 0 && !hideFreeHint && <p className="mt-3 rounded-2xl bg-amber-50 p-3 text-xs text-amber-900">Adrese teslimde ücretsiz kargo için {formatTL(remaining)} daha ekle. Mağazadan teslim her zaman ücretsiz.</p>}
       {children}
     </aside>
   );

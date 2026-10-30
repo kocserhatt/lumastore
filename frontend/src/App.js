@@ -45,8 +45,8 @@ function App() {
                 <Route path="/favorilerim" element={<RequireAuth><FavoritesPage /></RequireAuth>} />
                 <Route path="/odeme/sonuc" element={<PaymentResult />} />
                 <Route path="/sayfa/:slug" element={<LegalPage />} />
-                <Route path="/sepet" element={<RequireAuth><CartPage /></RequireAuth>} />
-                <Route path="/odeme" element={<RequireAuth><CheckoutPage /></RequireAuth>} />
+                <Route path="/sepet" element={<CartPage />} />
+                <Route path="/odeme" element={<CheckoutPage />} />
                 <Route path="/siparislerim" element={<RequireAuth><OrdersPage /></RequireAuth>} />
                 <Route path="/admin" element={<RequireAuth><AdminPage /></RequireAuth>} />
                 <Route path="/sign-in/*" element={<SignInPage />} />

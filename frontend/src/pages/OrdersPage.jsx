@@ -3,10 +3,25 @@ import { useSearchParams } from "react-router-dom";
 import { Package, PartyPopper } from "lucide-react";
 import { useStore } from "@/context/StoreContext";
 import { EmptyState, PageTitle } from "@/components/Common";
-import { STATUS_META, PAYMENT_LABELS, formatTL, formatDate } from "@/lib/shop";
+import { STATUS_META, PAYMENT_LABELS, PAYMENT_STATUS, formatTL, formatDate } from "@/lib/shop";
+
+export const OrderTimeline = ({ events = [] }) => (
+  <details className="group mt-3 text-sm">
+    <summary className="cursor-pointer list-none text-xs font-semibold text-orange-700" data-testid="order-history-toggle">Sipariş geçmişi ({events.length})</summary>
+    <ol className="mt-2 space-y-2 border-l-2 border-orange-100 pl-4">
+      {events.map((e, i) => (
+        <li key={i} className="relative">
+          <span className="absolute -left-[21px] top-1.5 h-2.5 w-2.5 rounded-full bg-orange-500" />
+          <div className="font-semibold">{STATUS_META[e.status]?.label || e.status}</div>
+          <div className="text-xs text-zinc-500">{formatDate(e.created_at)}{e.note ? ` · ${e.note}` : ""}</div>
+        </li>
+      ))}
+    </ol>
+  </details>
+);
 
 export const StatusBadge = ({ status, testId }) => {
-  const m = STATUS_META[status] || STATUS_META.alindi;
+  const m = STATUS_META[status] || STATUS_META.beklemede;
   return <span data-testid={testId} className={`rounded-full px-3 py-1 text-xs font-bold ${m.cls}`}>{m.label}</span>;
 };
 
@@ -50,7 +65,14 @@ export default function OrdersPage() {
               <StatusBadge status={o.status} testId={`order-status-${o.id}`} />
             </div>
             <OrderItems items={o.items} />
+            {o.status === "kargoda" && (o.tracking_number || o.cargo_company) && (
+              <div className="mt-3 rounded-2xl bg-sky-50 p-3 text-sm text-sky-900" data-testid={`order-tracking-${o.id}`}>
+                Kargo: <b>{o.cargo_company || "-"}</b> · Takip No: <b>{o.tracking_number || "-"}</b>
+              </div>
+            )}
+            <OrderTimeline events={o.events} />
             <div className="mt-3 flex justify-between border-t border-dashed border-orange-200 pt-3 font-bold"><span>Toplam</span><span>{formatTL(o.total_amount)}</span></div>
+            <div className="mt-1 text-xs text-zinc-500" data-testid={`order-payment-status-${o.id}`}>{PAYMENT_STATUS[o.payment_status] || ""}</div>
           </article>
         ))}
       </div>

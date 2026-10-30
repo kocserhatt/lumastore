@@ -17,14 +17,28 @@ export const CATEGORY_META = {
 export const CATEGORY_SLUGS = Object.keys(CATEGORY_META);
 
 export const STATUS_META = {
-  alindi: { label: "Sipariş Alındı", cls: "bg-zinc-100 text-zinc-800" },
+  beklemede: { label: "Bekliyor", cls: "bg-zinc-100 text-zinc-800" },
+  onaylandi: { label: "Onaylandı", cls: "bg-violet-100 text-violet-900" },
   hazirlaniyor: { label: "Hazırlanıyor", cls: "bg-amber-100 text-amber-900" },
-  kargoda: { label: "Kargoda", cls: "bg-sky-100 text-sky-900" },
-  teslim_edildi: { label: "Teslim Edildi", cls: "bg-green-100 text-green-900" },
-  iptal: { label: "İptal", cls: "bg-rose-100 text-rose-900" },
+  kargoda: { label: "Kargoya Verildi", cls: "bg-sky-100 text-sky-900" },
+  teslim_edildi: { label: "Tamamlandı", cls: "bg-green-100 text-green-900" },
+  iptal: { label: "İptal Edildi", cls: "bg-rose-100 text-rose-900" },
+};
+export const STATUS_ORDER = ["beklemede", "onaylandi", "hazirlaniyor", "kargoda", "teslim_edildi"];
+export const CANCELLABLE = ["beklemede", "onaylandi", "hazirlaniyor"];
+export const nextStatuses = (cur) => {
+  if (cur === "teslim_edildi" || cur === "iptal") return [];
+  const after = STATUS_ORDER.slice(STATUS_ORDER.indexOf(cur) + 1);
+  return CANCELLABLE.includes(cur) ? [...after, "iptal"] : after;
 };
 
-export const PAYMENT_LABELS = { kapida_nakit: "Kapıda Nakit", kapida_kart: "Kapıda Kredi Kartı" };
+export const PAYMENT_LABELS = { kapida_nakit: "Kapıda Nakit", kapida_kart: "Kapıda Kredi Kartı", online_kart: "Online Kart (iyzico)" };
+export const PAYMENT_STATUS = {
+  odenmedi: "Teslimatta ödenecek", bekliyor: "Ödeme bekleniyor", odendi: "Ödendi",
+  basarisiz: "Ödeme başarısız", inceleniyor: "Ödeme inceleniyor",
+};
+
+export const whatsappLink = (number, text) => `https://wa.me/${number}?text=${encodeURIComponent(text)}`;
 
 const tl = new Intl.NumberFormat("tr-TR", { style: "currency", currency: "TRY" });
 export const formatTL = (v) => tl.format(v || 0);

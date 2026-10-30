@@ -72,6 +72,9 @@ export const Header = () => {
               Yönetici
             </Link>
           )}
+          <Link to="/favorilerim" data-testid="header-favorites-link" className="hidden rounded-full px-3 py-2 text-sm font-semibold text-zinc-700 hover:bg-orange-50 md:inline-block">
+            Favorilerim
+          </Link>
           <Link to="/siparislerim" data-testid="header-orders-link" className="hidden rounded-full px-3 py-2 text-sm font-semibold text-zinc-700 hover:bg-orange-50 md:inline-block">
             Siparişlerim
           </Link>

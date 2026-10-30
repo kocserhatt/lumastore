@@ -1,8 +1,8 @@
 import { Link } from "react-router-dom";
-import { Minus, Plus, Trash2, ShoppingBag } from "lucide-react";
+import { Minus, Plus, Trash2, ShoppingBag, MessageCircle } from "lucide-react";
 import { useStore } from "@/context/StoreContext";
 import { EmptyState, PageTitle } from "@/components/Common";
-import { formatTL } from "@/lib/shop";
+import { formatTL, whatsappLink } from "@/lib/shop";
 
 export const OrderSummary = ({ cart, children }) => {
   const remaining = cart.free_shipping_limit - cart.subtotal;
@@ -43,7 +43,13 @@ const CartLine = ({ item }) => {
 };
 
 export default function CartPage() {
-  const { cart } = useStore();
+  const { cart, settings } = useStore();
+  const waText = () => [
+    "Merhaba Luma Petshop, aşağıdaki ürünleri sipariş etmek istiyorum:", "",
+    ...cart.items.map((i, n) => `${n + 1}) ${i.product.name} x${i.quantity} = ${formatTL(i.product.price * i.quantity)}`), "",
+    `Ara Toplam: ${formatTL(cart.subtotal)}`, `Kargo: ${cart.shipping_fee ? formatTL(cart.shipping_fee) : "Ücretsiz"}`,
+    `Toplam: ${formatTL(cart.total)}`, "", "Ad Soyad:", "Adres:",
+  ].join("\n");
   return (
     <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6 lg:px-8">
       <PageTitle kicker="Alışveriş" title="Sepetim" />
@@ -56,6 +62,12 @@ export default function CartPage() {
             <Link to="/odeme" data-testid="cart-checkout-button" className="mt-5 block rounded-full bg-orange-600 py-3.5 text-center text-sm font-bold text-white transition-colors hover:bg-orange-700">
               Siparişi Tamamla
             </Link>
+            {settings.whatsapp_number && (
+              <a href={whatsappLink(settings.whatsapp_number, waText())} target="_blank" rel="noopener noreferrer" data-testid="cart-whatsapp-button"
+                className="mt-3 flex items-center justify-center gap-2 rounded-full bg-[#25D366] py-3.5 text-sm font-bold text-zinc-900 transition-colors hover:bg-[#1ebe5a]">
+                <MessageCircle className="h-4 w-4" /> WhatsApp ile Sipariş Ver
+              </a>
+            )}
           </OrderSummary>
         </div>
       )}

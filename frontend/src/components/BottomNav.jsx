@@ -1,14 +1,15 @@
 import { NavLink } from "react-router-dom";
-import { Home, LayoutGrid, ShoppingBag, Package, ShieldCheck } from "lucide-react";
+import { Home, LayoutGrid, ShoppingBag, Package, ShieldCheck, Heart } from "lucide-react";
 import { useStore } from "@/context/StoreContext";
 
 export const BottomNav = () => {
-  const { isAdmin, cartCount } = useStore();
+  const { isAdmin, cartCount, unread } = useStore();
   const items = [
     { to: "/", label: "Ana Sayfa", icon: Home, id: "home", end: true },
     { to: "/kategori/tumu", label: "Kategoriler", icon: LayoutGrid, id: "categories" },
+    { to: "/favorilerim", label: "Favoriler", icon: Heart, id: "favorites", badge: unread },
     { to: "/sepet", label: "Sepet", icon: ShoppingBag, id: "cart", badge: cartCount },
-    { to: "/siparislerim", label: "Siparişlerim", icon: Package, id: "orders" },
+    { to: "/siparislerim", label: "Siparişler", icon: Package, id: "orders" },
     ...(isAdmin ? [{ to: "/admin", label: "Yönetici", icon: ShieldCheck, id: "admin" }] : []),
   ];
   return (

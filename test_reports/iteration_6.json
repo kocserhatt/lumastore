@@ -1,0 +1,22 @@
+{
+  "summary": "Short frontend regression after the code-review changes (OrderTimeline key, ClerkAuthProvider catch comment). Everything requested passed: the Clerk sign-in form renders, a member's /siparislerim shows 25 orders and all 25 history toggles expand (68 timeline items) with no React key warnings and no console errors, the session survives a reload, guest add-to-cart and /sepet work, and whatsapp-fab is present.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "/kategori/tumu and /sepet (mobile 390)", "issues": ["A leftover test product 'TEST_Ref' (₺10, broken image showing alt text) is the first product in the public catalog. Earlier test runs probably created it, so it should be deactivated or removed by the main agent or admin."]},
+      {"screen": "/sepet (mobile 390)", "issues": ["At the default scroll position, the floating whatsapp-fab covers the right edge of the 'WhatsApp ile Sipariş Ver' button. Cosmetic only, the button is still clickable."]}
+    ]
+  },
+  "test_report_links": [],
+  "action_items": ["Deactivate or remove the leftover public product 'TEST_Ref' (broken image)", "Optional: add bottom padding on /sepet on mobile so whatsapp-fab does not cover the cart CTA"],
+  "critical_code_review_comments": ["OrderTimeline key `${status}-${created_at}` is fine as long as created_at has sub-second precision. Two events with the same status in the same timestamp would collide, which is unlikely.", "ClerkAuthProvider: retry logic is unchanged and the config loads correctly."],
+  "updated_files": [],
+  "success_rate": {"backend": "skipped (frontend only)", "frontend": "100%"},
+  "test_credentials": "member musteri+clerk_test@example.com (user_3LQ7fquqigC2cVuZVY3ZKoTTjM1) signed in via clerk_helper.sign_in_ticket. GET /api/orders returns 401 without a token and 200 (25 orders) with a Bearer token.",
+  "seed_data_creation": "None. Only a guest cart in localStorage. Admin settings untouched.",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Member orders endpoint is GET /api/orders (not /orders/my). Sign in with /sign-in?__clerk_ticket=<ticket>. Set localStorage luma_cookie_notice_v1=1 to skip the cookie banner."
+}

@@ -59,7 +59,7 @@ const OrderCard = ({ o, onPick }) => {
         <span className="font-bold">Toplam {formatTL(o.total_amount)}</span>
         {options.length > 0 && (
           <Select value="" onValueChange={(s) => onPick(o, s)}>
-            <SelectTrigger className="h-10 w-48 rounded-full bg-zinc-900 text-white" data-testid={`admin-order-status-select-${o.id}`}><SelectValue placeholder="Durumu değiştir" /></SelectTrigger>
+            <SelectTrigger className="h-10 w-48 rounded-full bg-zinc-900 text-white data-[placeholder]:text-white [&_svg]:text-white [&_svg]:opacity-100" data-testid={`admin-order-status-select-${o.id}`}><SelectValue placeholder="Durumu değiştir" /></SelectTrigger>
             <SelectContent>{options.map((s) => <SelectItem key={s} value={s} data-testid={`admin-order-status-select-${o.id}-${s}`}>{STATUS_META[s].label}</SelectItem>)}</SelectContent>
           </Select>
         )}

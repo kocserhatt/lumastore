@@ -1,0 +1,39 @@
+{
+  "summary": "Iteration 2 full-stack test of production-readiness features. Backend: new pytest suite (15 tests, public URL, real Clerk session tokens). 14/15 passed. The only failure: 3 concurrent POST /api/orders with the same idempotency_key give [200, 400, 400] instead of returning the same order each time. Stock still dropped only once, so nothing was processed twice. Frontend (Playwright, Clerk __clerk_ticket sign-in, desktop and 390px) verified: stock hidden and only 'Stokta' shown; product gallery, thumbs and mobile sticky add bar; favorites heart toggle and /favorilerim; reviews create/summary/delete; WhatsApp cart link; checkout terms toast, online card disabled ('Yakında aktif olacak'), kapıda kart order redirects to /siparislerim?yeni= with history toggle; admin stats, panels, 4 tabs, filter chips with counts, forward-only status select, kargoda requires cargo and tracking, customer sees tracking; quick price drop creates a notification shown on /favorilerim; product add with real Supabase upload (webp, max side 1600), cover/replace/url-add/delete, edit, delete with confirm (storage objects removed); settings WhatsApp normalization and integrations panel (email Aktif, storage Aktif, iyzico Pasif); customers list and orders sheet; member redirected away from /admin; all 7 legal pages show the template warning and footer links; cookie banner accept. One mobile overflow bug was found in the admin dashboard (scrollWidth 509 at 390px) and FIXED. No other horizontal overflow at 390px.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {"endpoint": "POST /api/orders", "issue": "Concurrent same-idempotency_key submits: the first returns 200 and the others return 400 'Sepetiniz boş'. These requests wait on the cart row lock, and the cart is already emptied by the first order. The idempotency key is only checked before the lock is taken, not after. Stock is decremented once (no double processing). Fix: re-run _order_by_key after acquiring the CartItem FOR UPDATE lock, or if rows are empty, look up the key before raising 400."},
+      {"endpoint": "notify_price_drop (background)", "issue": "Notification body uses '150.00 ₺ → 129.90 ₺' formatting. The rest of the UI uses Turkish locale '₺150,00'. Also, p may be None if the product is deleted before the task runs (AttributeError)."}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {"component": "AdminDashboard Panel (critical-stock-panel / best-sellers-panel)", "issue": "At 390px the page overflowed horizontally (scrollWidth 509). Cause: grid items with min-width:auto plus long 'truncate' (nowrap) product names. FIXED by adding min-w-0 to the Panel <section>. Re-verified: no overflow on all admin tabs.", "selector": "[data-testid=critical-stock-panel]", "priority": "MEDIUM (fixed)"}
+    ],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Product page mobile", "issues": ["On first visit the cookie banner (bottom-[72px], z-50) fully covers the sticky add-to-cart bar until the user taps 'Anladım'. Consider placing the banner above the sticky bar on product pages, or making it more compact."]},
+      {"screen": "Admin order card", "issues": ["'Durumu değiştir' placeholder in the black SelectTrigger is low-contrast grey on black."]}
+    ]
+  },
+  "test_report_links": ["/app/backend/tests/test_iteration2_features.py", "/app/test_reports/pytest/pytest_iter2.xml"],
+  "action_items": [
+    "Make POST /api/orders return the existing order for concurrent duplicates with the same idempotency_key: re-check the key after acquiring the cart lock.",
+    "Format price-drop notification amounts with Turkish locale (₺1.234,50), and guard against p being None in notify_price_drop.",
+    "Optional UX: stop the cookie banner from covering the mobile sticky add-to-cart bar; improve contrast of the admin status select placeholder."
+  ],
+  "critical_code_review_comments": [
+    "server.py is 902 lines: split into routers (orders, admin, reviews, favorites, payments).",
+    "admin_stats revenue counts every non-cancelled order, including online_kart orders with payment_status != odendi. Once iyzico is enabled, unpaid online orders will inflate revenue and best sellers.",
+    "Online_kart orders (when enabled) decrement stock at creation, but nothing restores stock or cancels them if payment fails or is abandoned. A cleanup job will be needed before iyzico goes live.",
+    "transition_allowed lets the status skip forward (beklemede -> teslim_edildi directly). This is acceptable but should be intentional."
+  ],
+  "updated_files": ["/app/frontend/src/pages/admin/AdminDashboard.jsx", "/app/backend/tests/test_iteration2_features.py"],
+  "success_rate": {"backend": "93% (14/15)", "frontend": "100% of tested flows (1 mobile overflow bug found and fixed)"},
+  "test_credentials": "Used /app/memory/test_credentials.md users: admin user_3LQ7fqlPQupYzh5tlXAE0okqdse, member user_3LQ7fquqigC2cVuZVY3ZKoTTjM1, via Clerk sign-in tickets and session tokens (clerk_helper.py).",
+  "seed_data_creation": "Created and then deleted TEST_Iter2 Mama, TEST_UI Kedi Maması and TEST_Upload Ürün products. Test orders for the member remain (cancelled or completed). Member has a few price-drop notifications. Seed products untouched. WhatsApp setting re-saved as 905321234567 (same value).",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Run pytest /app/backend/tests/test_iteration2_features.py; it creates and deletes its own TEST_ product. For UI sign-in, write a ticket from clerk_helper.sign_in_ticket(uid) to a file and open /sign-in?__clerk_ticket=<t>. Tickets are single-use. Accept the cookie banner first on mobile, or it blocks the sticky add-to-cart. Emails are real, so keep order and status changes minimal."
+}

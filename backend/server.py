@@ -367,6 +367,9 @@ async def create_order(body: CheckoutIn, request: Request, bg: BackgroundTasks,
     rows = (await db.execute(select(CartItem).options(selectinload(CartItem.product))
                              .where(CartItem.user_id == uid).with_for_update(of=CartItem))).scalars().all()
     if not rows:
+        existing = await _order_by_key(db, uid, body.idempotency_key)
+        if existing:
+            return order_out(existing)
         raise HTTPException(400, "Sepetiniz boş")
     locked = (await db.execute(select(Product).where(Product.id.in_([c.product_id for c in rows]))
                                .with_for_update())).scalars().all()
@@ -465,12 +468,15 @@ def _apply_product(p: Product, body: ProductIn):
 async def notify_price_drop(product_id: str, old: float, new: float, base: Optional[str]):
     async with AsyncSessionLocal() as db:
         p = await db.get(Product, product_id)
+        if not p:
+            return
         favs = (await db.execute(select(Favorite.user_id, User.email).join(User, User.user_id == Favorite.user_id, isouter=True)
                                  .where(Favorite.product_id == product_id))).all()
+        tl = lambda v: f"{v:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".") + " ₺"  # noqa: E731
         for uid, _ in favs:
             db.add(Notification(user_id=uid, kind="price_drop", product_id=product_id,
                                 title=f"{p.name} indirimde!",
-                                body=f"Fiyatı {old:.2f} ₺ → {new:.2f} ₺ oldu."))
+                                body=f"Fiyatı {tl(old)} → {tl(new)} oldu."))
         await db.commit()
     link = f"{base}/urun/{product_id}" if base else None
     for _, email in favs:

@@ -11,7 +11,7 @@ const Stat = ({ icon: Icon, label, value, dark, testId }) => (
 );
 
 const Panel = ({ icon: Icon, title, children, testId }) => (
-  <section className="rounded-3xl border border-orange-100 bg-white p-5" data-testid={testId}>
+  <section className="min-w-0 rounded-3xl border border-orange-100 bg-white p-5" data-testid={testId}>
     <h3 className="mb-3 flex items-center gap-2 font-bold"><Icon className="h-4 w-4 text-orange-600" /> {title}</h3>
     {children}
   </section>

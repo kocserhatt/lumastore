@@ -1,0 +1,215 @@
+{
+  "brand_identity": {
+    "name": "Luma Petshop",
+    "tagline": "Evcil Dostlarınız İçin En İyisi",
+    "language": "tr",
+    "currency": "TL (₺)",
+    "admin_email": "info@lumapetshop.com.tr",
+    "archetype": "ORGANIC & PLAYFUL",
+    "emotional_tone": "Warm, inviting, trustworthy, high-energy pet care experience."
+  },
+  "color_system": {
+    "theme_mode": "light_first_with_dark_support",
+    "base_background": "#FFFDF9",
+    "card_background": "#FFFFFF",
+    "dark_background": "#0F172A",
+    "dark_card_background": "#1E293B",
+    "palette": {
+      "primary": {
+        "main": "#EA580C",
+        "hover": "#C2410C",
+        "light": "#FFEDD5",
+        "contrast_text": "#FFFFFF"
+      },
+      "secondary": {
+        "main": "#15803D",
+        "hover": "#166534",
+        "light": "#DCFCE7",
+        "contrast_text": "#FFFFFF"
+      },
+      "accent": {
+        "amber": "#F59E0B",
+        "amber_light": "#FEF3C7",
+        "teal": "#0D9488",
+        "rose": "#E11D48"
+      },
+      "neutral": {
+        "heading": "#18181B",
+        "body": "#3F3F46",
+        "muted": "#71717A",
+        "border": "#E4E4E7",
+        "input": "#F4F4F5"
+      }
+    },
+    "rules": [
+      "No transparent text backgrounds over cards or images",
+      "Buttons must have explicit text color on hover (e.g., hover:bg-orange-700 hover:text-white)",
+      "High contrast badge labels (minimum 4.5:1 contrast ratio)"
+    ]
+  },
+  "typography": {
+    "heading_font": "Outfit, sans-serif",
+    "body_font": "Plus Jakarta Sans, sans-serif",
+    "scale": {
+      "h1": "text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight",
+      "h2": "text-2xl sm:text-3xl font-bold tracking-tight",
+      "h3": "text-xl sm:text-2xl font-semibold",
+      "h4": "text-lg font-semibold",
+      "body": "text-sm sm:text-base leading-relaxed",
+      "caption": "text-xs font-medium uppercase tracking-wider text-muted-foreground"
+    }
+  },
+  "spacing_and_layout": {
+    "philosophy": "Mobile-First approach with generous touch targets (min 44px) and clear navigation",
+    "mobile_nav": "Fixed bottom tab bar for mobile view with icons (Ana Sayfa, Kategoriler, Sepet, Siparişlerim, Admin)",
+    "desktop_header": "Sticky top bar with search, category menu, cart drawer trigger, auth modal trigger",
+    "padding_scale": {
+      "container": "px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto",
+      "card_padding": "p-4 sm:p-6",
+      "section_gap": "py-8 sm:py-12"
+    },
+    "bento_grid": "grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6"
+  },
+  "key_features_and_pages": [
+    {
+      "page": "Home (Ana Sayfa)",
+      "components": [
+        "Header Navigation with Search Bar & Cart Counter",
+        "Hero Banner Carousel (Promotions, Kampanyalar, Hızlı Teslimat)",
+        "Category Bar / Grid (Köpek, Kedi, Kuş, Balık, Kemirgen)",
+        "Featured Products Horizontal Scroll / Bento Grid",
+        "Special Discount Deals (Günün Fırsatları)",
+        "Customer Reviews & Trust Badges (Ücretsiz Kargo, Güvenli Ödeme)"
+      ]
+    },
+    {
+      "page": "Category Pages (Kategori Sayfaları)",
+      "components": [
+        "Category Filter & Subcategory Tabs",
+        "Sort Dropdown (Fiyata Göre, Popülerlik, Yeniler)",
+        "Product Grid with Quick Add to Cart",
+        "Stock & Discount Badges"
+      ]
+    },
+    {
+      "page": "Product Detail (Ürün Detay)",
+      "components": [
+        "Image Gallery with Zoom / Thumbnail selector",
+        "Price Display with Discount calculation",
+        "Quantity Selector & Stock Status",
+        "Detailed Specs & Description Tabs",
+        "Add to Cart CTA with Sonner Toast notification",
+        "Related Products Carousel"
+      ]
+    },
+    {
+      "page": "Cart & Checkout (Sepet ve Ödeme)",
+      "components": [
+        "Cart Drawer & Dedicated Cart Page",
+        "Quantity Adjuster & Item Remover",
+        "Order Summary (Ara Toplam, Kargo Ücreti, Toplam)",
+        "Checkout Drawer/Modal with Delivery Address Form",
+        "Payment Method Selection (Kapıda Nakit/Kart İle Ödeme, Kredi Kartı)",
+        "Order Confirmation Toast & Redirection"
+      ]
+    },
+    {
+      "page": "User Auth & Profile (Kullanıcı Girişi / Profil)",
+      "components": [
+        "Email / Password Login & Registration Forms",
+        "Quick Demo Account Switcher (Müşteri Girişi & Admin Girişi info@lumapetshop.com.tr)",
+        "My Orders (Siparişlerim) View with Order Status Badges (Hazırlanıyor, Kargoda, Teslim Edildi)"
+      ]
+    },
+    {
+      "page": "Admin Panel (Yönetici Paneli)",
+      "components": [
+        "Overview Cards (Toplam Satış, Toplam Sipariş, Aktif Ürünler)",
+        "Product Management Table (Add New Product Modal, Edit, Delete, Stock Update)",
+        "Order Management Table (Filter by Status, Update Status Dropdown)",
+        "Category & Inventory Overview"
+      ]
+    }
+  ],
+  "database_and_supabase": {
+    "tables": {
+      "products": "id, name, description, price, original_price, category, subcategory, image_url, stock, rating, is_featured, created_at",
+      "categories": "id, name, slug, icon, image_url",
+      "orders": "id, user_id, customer_name, customer_email, customer_phone, delivery_address, payment_method, total_amount, status, created_at",
+      "order_items": "id, order_id, product_id, product_name, price, quantity, image_url"
+    },
+    "mock_fallback": "Ensure state fallback to local storage / memory mock data when Supabase connection is initializing or offline."
+  },
+  "image_urls": {
+    "hero_banner": "https://images.unsplash.com/photo-1563460716037-460a3ad24ba9?crop=entropy&cs=srgb&fm=jpg&q=85",
+    "pet_shop_store": "https://images.unsplash.com/photo-1789875688162-82e0231c3023?crop=entropy&cs=srgb&fm=jpg&q=85",
+    "categories": {
+      "dog": "https://images.unsplash.com/photo-1727419780738-8b9e85ab9ca6?crop=entropy&cs=srgb&fm=jpg&q=85",
+      "cat": "https://images.unsplash.com/photo-1689723671448-3fb4dd4b294e?crop=entropy&cs=srgb&fm=jpg&q=85",
+      "bird": "https://images.unsplash.com/photo-1714335407781-67d459552736?crop=entropy&cs=srgb&fm=jpg&q=85",
+      "fish": "https://images.unsplash.com/photo-1520301255226-bf5f144451c1?crop=entropy&cs=srgb&fm=jpg&q=85",
+      "rodent": "https://images.unsplash.com/photo-1565674244283-993fb27a215f?crop=entropy&cs=srgb&fm=jpg&q=85"
+    },
+    "sample_products": [
+      {
+        "name": "Premium Somonlu Yetişkin Kedi Maması 15kg",
+        "category": "Kedi",
+        "price": 849.90,
+        "original_price": 999.90,
+        "image_url": "https://images.unsplash.com/photo-1655210913315-e8147faf7600?crop=entropy&cs=srgb&fm=jpg&q=85",
+        "rating": 4.9
+      },
+      {
+        "name": "Tavuklu ve Pirinçli Kuzulu Köpek Maması 12kg",
+        "category": "Köpek",
+        "price": 929.00,
+        "original_price": 1150.00,
+        "image_url": "https://images.unsplash.com/photo-1563460716037-460a3ad24ba9?crop=entropy&cs=srgb&fm=jpg&q=85",
+        "rating": 4.8
+      },
+      {
+        "name": "Renkli Muhabbet Kuşu Yemi ve Vitamin Seti",
+        "category": "Kuş",
+        "price": 149.50,
+        "original_price": 189.00,
+        "image_url": "https://images.unsplash.com/photo-1714335407781-67d459552736?crop=entropy&cs=srgb&fm=jpg&q=85",
+        "rating": 4.7
+      },
+      {
+        "name": "Akvaryum İç Filtre & Led Aydınlatma Seti",
+        "category": "Balık",
+        "price": 450.00,
+        "original_price": 520.00,
+        "image_url": "https://images.unsplash.com/photo-1579967327980-2a4117da0e4a?crop=entropy&cs=srgb&fm=jpg&q=85",
+        "rating": 4.6
+      }
+    ]
+  },
+  "testing_attributes": {
+    "required": true,
+    "pattern": "data-testid='{role}-{identifier}'",
+    "examples": [
+      "data-testid='header-logo'",
+      "data-testid='nav-search-input'",
+      "data-testid='nav-cart-button'",
+      "data-testid='mobile-nav-home'",
+      "data-testid='category-card-kopek'",
+      "data-testid='product-card-1'",
+      "data-testid='add-to-cart-button-1'",
+      "data-testid='cart-drawer-checkout-button'",
+      "data-testid='checkout-name-input'",
+      "data-testid='checkout-submit-button'",
+      "data-testid='login-email-input'",
+      "data-testid='admin-add-product-button'",
+      "data-testid='admin-order-status-select-101'"
+    ]
+  },
+  "instructions_to_main_agent": [
+    "Use JavaScript (.js / .jsx) components as configured in the React repository.",
+    "Implement full mobile-first responsiveness with a fixed bottom navigation bar on mobile screen sizes.",
+    "All text content, product names, categories, and checkout forms must be in Turkish (TL ₺ currency).",
+    "Include both Supabase backend integration logic and local state / localStorage fallback so all CRUD operations (Add/Edit/Delete products, Order placement, Order status update) work seamlessly.",
+    "Ensure every clickable button, input, navigation item, modal trigger, and table row has exact data-testid attributes.",
+    "Use sonner for instant toast notifications when adding items to cart or updating orders."
+  ]
+}

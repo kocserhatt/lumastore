@@ -27,7 +27,7 @@ export default function ClerkAuthProvider({ children }) {
       try {
         const cfg = await (await fetch(`${BACKEND_URL}/api/clerk/config`)).json();
         if (cfg.enabled) return cancelled || setConfig(cfg);
-      } catch {}
+      } catch { /* backend not reachable yet — retried below */ }
       if (cancelled) return;
       if (attempt >= 20) return setUnavailable(true);
       setTimeout(() => load(attempt + 1), 1500);

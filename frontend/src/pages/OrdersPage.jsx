@@ -9,8 +9,8 @@ export const OrderTimeline = ({ events = [] }) => (
   <details className="group mt-3 text-sm">
     <summary className="cursor-pointer list-none text-xs font-semibold text-orange-700" data-testid="order-history-toggle">Sipariş geçmişi ({events.length})</summary>
     <ol className="mt-2 space-y-2 border-l-2 border-orange-100 pl-4">
-      {events.map((e, i) => (
-        <li key={i} className="relative">
+      {events.map((e) => (
+        <li key={`${e.status}-${e.created_at}`} className="relative">
           <span className="absolute -left-[21px] top-1.5 h-2.5 w-2.5 rounded-full bg-orange-500" />
           <div className="font-semibold">{STATUS_META[e.status]?.label || e.status}</div>
           <div className="text-xs text-zinc-500">{formatDate(e.created_at)}{e.note ? ` · ${e.note}` : ""}</div>

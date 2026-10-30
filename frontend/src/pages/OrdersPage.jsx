@@ -14,7 +14,7 @@ export const OrderItems = ({ items }) => (
   <ul className="mt-3 space-y-2">
     {items.map((i) => (
       <li key={i.id} className="flex items-center gap-3 text-sm">
-        <img src={i.image_url} alt="" className="h-12 w-12 rounded-xl object-cover" />
+        {i.image_url ? <img src={i.image_url} alt="" className="h-12 w-12 rounded-xl object-cover" /> : <span className="grid h-12 w-12 place-items-center rounded-xl bg-orange-100 text-orange-600"><Package className="h-5 w-5" /></span>}
         <span className="flex-1 line-clamp-1">{i.product_name} <span className="text-zinc-400">× {i.quantity}</span></span>
         <span className="font-semibold">{formatTL(i.price * i.quantity)}</span>
       </li>

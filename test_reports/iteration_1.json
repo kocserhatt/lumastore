@@ -1,0 +1,37 @@
+{
+  "summary": "Full backend + frontend test of Luma Petshop (Supabase Postgres + Clerk). Backend: 23/23 pytest pass (public catalog filters/sort/search, 401 without token, 403 for members on admin/users endpoints, cart add/update/remove, shipping 49.90 <500 / free >=500, order creation w/ stock decrement + cart emptied, cart/order isolation between users (404 on other user's cart item), invalid payment 400, empty cart 400, admin product CRUD + invalid category 400, deleting product referenced by cart/order items works, order status update + filter, stats, roles 403/404, role in body ignored). Frontend (390px + 1920px): home hero/category cards/featured (6)/bottom nav, category page + sort + ?q= search + /kategori/tumu (12), product detail qty + add-to-cart, guest add -> /sign-in with toast, ticket sign-in, session survives reload, cart inc/dec/totals, checkout (kapida_kart) -> /siparislerim?yeni= banner, cart badge cleared, member /admin redirected to /, admin panel tabs/stats/order status select/filter/add-edit-delete product with confirm/users list, sign-out returns signed-out UI and /sepet redirects to sign-in. No functional bugs found.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {"endpoint": "POST /api/orders", "issue": "Stock check + decrement has no row lock (SELECT ... FOR UPDATE) -> concurrent checkouts can oversell / drive stock negative. Not reproduced, code review finding."},
+      {"endpoint": "GET /api/products?q=", "issue": "q is interpolated into ILIKE without escaping % and _ (wildcard injection, harmless but imprecise). Search also only matches name, not description."},
+      {"endpoint": "PATCH /api/users/{id}/role", "issue": "409 last-admin guard not exercised end-to-end because 2 admins exist (info@ and admin+clerk_test@lumapetshop.com.tr); logic reviewed and looks correct."}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Orders / Admin orders", "issues": ["Order items with empty image_url render an empty white box; add a placeholder fallback image"]},
+      {"screen": "Sign-in / UserButton", "issues": ["Clerk UI is in English ('Continue to Luma Petshop', 'Sign out') while app is Turkish - consider @clerk/localizations trTR", "On mobile the sign-in card top sits right under the sticky header/search bar with little spacing"]}
+    ]
+  },
+  "test_report_links": ["/app/backend/tests/test_petshop_api.py", "/app/backend/tests/clerk_helper.py", "/app/test_reports/pytest/pytest_results.xml"],
+  "action_items": [
+    "Optional: lock product rows (with_for_update) in POST /api/orders to prevent oversell under concurrency",
+    "Optional: placeholder image for order items/products with empty image_url",
+    "Optional: Turkish localization for Clerk components"
+  ],
+  "critical_code_review_comments": [
+    "create_order: race condition on stock (no SELECT FOR UPDATE / atomic UPDATE ... WHERE stock >= qty)",
+    "list_products: escape LIKE wildcards in q",
+    "current_member: Clerk lookup failure (raise_for_status) surfaces as 500 rather than 503 - acceptable per playbook (do not default role), but a clearer error code would help"
+  ],
+  "updated_files": ["/app/backend/tests/test_petshop_api.py", "/app/backend/tests/clerk_helper.py", "/app/memory/test_credentials.md"],
+  "success_rate": {"backend": "100% (23/23)", "frontend": "100%"},
+  "test_credentials": "Recorded in /app/memory/test_credentials.md (file was empty before). Clerk users created via backend API: info@lumapetshop.com.tr (admin), testa+clerk_test@lumatest.com, testb+clerk_test@lumatest.com (members).",
+  "seed_data_creation": "Created test orders (TEST_ names) for member_a/member_b; one order status set to kargoda/hazirlaniyor; a TEST_Ref product was created and deleted (its order items remain with null product_id). Stock of 'Hamster Talaşı' (-2) and 'Kanarya & Papağan Oyun Salıncağı' (-1) decremented. No endpoint exists to delete orders.",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Run: cd /app/backend/tests && python -m pytest test_petshop_api.py -n0 (tests share state; pytest.ini adds xdist flags so use -n0). UI login: python clerk_helper.py ticket <admin|member_a|member_b> -> <app>/sign-in?__clerk_ticket=<token>. Clerk sign-out: .cl-userButtonTrigger then button 'Sign out'."
+}

@@ -11,7 +11,7 @@ const Shell = ({ children }) => (
         <h2 className="mt-4 text-5xl font-extrabold leading-tight">Dostun için<br />en iyisi, kapında.</h2>
       </div>
     </div>
-    <div className="flex items-center justify-center px-4 py-10">{children}</div>
+    <div className="flex items-center justify-center px-4 pb-10 pt-8 sm:pt-12">{children}</div>
   </div>
 );
 

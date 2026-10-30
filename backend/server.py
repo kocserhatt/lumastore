@@ -182,7 +182,8 @@ async def list_products(category: Optional[str] = None, q: Optional[str] = None,
     if category:
         stmt = stmt.where(Product.category == category)
     if q:
-        stmt = stmt.where(Product.name.ilike(f"%{q}%"))
+        esc = q.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
+        stmt = stmt.where(Product.name.ilike(f"%{esc}%", escape="\\") | Product.description.ilike(f"%{esc}%", escape="\\"))
     if featured is not None:
         stmt = stmt.where(Product.is_featured == featured)
     order = {"price_asc": Product.price.asc(), "price_desc": Product.price.desc(),
@@ -270,6 +271,10 @@ async def create_order(body: CheckoutIn, member: dict = Depends(current_member),
                              .where(CartItem.user_id == uid))).scalars().all()
     if not rows:
         raise HTTPException(400, "Sepetiniz boş")
+    locked = (await db.execute(select(Product).where(Product.id.in_([c.product_id for c in rows]))
+                               .with_for_update())).scalars().all()
+    for p in locked:
+        await db.refresh(p)
     subtotal = Decimal("0")
     for c in rows:
         if c.quantity > c.product.stock:

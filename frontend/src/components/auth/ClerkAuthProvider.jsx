@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ClerkProvider } from "@clerk/react";
+import { trTR } from "@clerk/localizations";
 
 const appearance = {
   variables: {
@@ -42,6 +43,7 @@ export default function ClerkAuthProvider({ children }) {
       publishableKey={config.publishable_key}
       proxyUrl={config.proxy_url || undefined}
       appearance={appearance}
+      localization={trTR}
       routerPush={(to) => navigate(to)}
       routerReplace={(to) => navigate(to, { replace: true })}
       signInUrl="/sign-in"

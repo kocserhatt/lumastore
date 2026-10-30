@@ -29,6 +29,7 @@ export default function CheckoutPage() {
   const [busy, setBusy] = useState(false);
   const set = (k) => (e) => setForm({ ...form, [k]: e.target.value });
 
+  if (cart.pending) return <div className="p-10 text-center text-sm text-zinc-500" data-testid="checkout-loading">Yükleniyor...</div>;
   if (!cart.items.length && !busy) return <Navigate to="/sepet" replace />;
 
   const submit = async (e) => {

@@ -1,0 +1,24 @@
+{
+  "summary": "Iteration 3 re-test of the fixes from iteration_2, plus a quick regression. All 5 requested items pass. Backend: new test_iteration3_fixes.py with 3 tests, plus the iteration2 suite with 15 tests. 18/18 passed, and the concurrent tests were re-run 3x without flakes. Concurrent same-key POST /api/orders with 3 and 5 parallel requests returns all 200 with a single order id, and stock goes down exactly once. The price-drop notification body reads 'Fiyatı 1.234,50 ₺ → 129,90 ₺ oldu.'. Frontend at 390px: the cookie banner sits at top 132-278px, below the 125px header, and no longer overlaps the sticky add bar (715-784px). elementFromPoint on sticky-add-to-cart hits the button, and clicking it before accepting cookies added the item to the cart (toast shown). The admin status select placeholder 'Durumu değiştir' is white rgb(255,255,255) at opacity 1 on bg rgb(24,24,27). Admin dashboard and all 4 tabs have scrollWidth 390 (no overflow). A kapida_nakit checkout via cart -> /odeme redirected to /siparislerim?yeni=<id> with a success banner.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [
+      {"component": "CheckoutPage", "issue": "Opening /odeme directly (deep link or page refresh) always redirects to /sepet, even when the cart has items. On line 32, `if (!cart.items.length && !busy) return <Navigate to=/sepet>` runs before StoreContext has loaded the cart, which starts as EMPTY_CART. Navigating via cart-checkout-button works.", "selector": "[data-testid=checkout-form]", "priority": "LOW"}
+    ],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": ["/app/backend/tests/test_iteration3_fixes.py", "/app/backend/tests/test_iteration2_features.py", "/app/test_reports/pytest/pytest_iter3.xml"],
+  "action_items": ["(Low) CheckoutPage: add a cart-loaded flag in StoreContext and only redirect to /sepet after the cart has loaded, so refreshing /odeme works."],
+  "critical_code_review_comments": [
+    "server.py is still ~909 lines: split it into routers.",
+    "Earlier notes still apply: admin_stats revenue will include unpaid online_kart orders, and there is no cleanup/stock restore for abandoned iyzico payments. Address both before enabling iyzico."
+  ],
+  "updated_files": ["/app/backend/tests/test_iteration3_fixes.py"],
+  "success_rate": {"backend": "100% (18/18)", "frontend": "100% of requested items (1 low-priority deep-link bug found)"},
+  "test_credentials": "Used admin user_3LQ7fqlPQupYzh5tlXAE0okqdse and member user_3LQ7fquqigC2cVuZVY3ZKoTTjM1 from /app/memory/test_credentials.md, via clerk_helper session tokens and sign-in tickets.",
+  "seed_data_creation": "Test-created TEST_Iter2 Mama products were deleted by fixtures. One UI order (89d52923) on the seed product 'Kanarya & Papağan Oyun Salıncağı' was cancelled afterwards, which restored its stock. The member cart is empty. Test orders remain in cancelled or delivered state. No seed prices changed.",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Run `cd /app/backend/tests && pytest test_iteration3_fixes.py test_iteration2_features.py` (use -n 0 to see prints). UI sign-in: /sign-in?__clerk_ticket=<clerk_helper.sign_in_ticket(uid)> (tickets are single-use). Set localStorage luma_cookie_notice_v1 to skip the banner. Reach /odeme via the cart button, not a direct URL."
+}

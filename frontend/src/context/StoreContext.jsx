@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { API, errMsg } from "@/lib/shop";
 
 const StoreContext = createContext(null);
-const EMPTY_CART = { items: [], subtotal: 0, shipping_fee: 0, total: 0, free_shipping_limit: 500 };
+const EMPTY_CART = { items: [], subtotal: 0, shipping_fee: 0, total: 0, free_shipping_limit: 500, pending: true };
 
 export const StoreProvider = ({ children }) => {
   const { isSignedIn, isLoaded, getToken } = useAuth();

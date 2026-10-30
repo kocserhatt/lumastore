@@ -1,6 +1,5 @@
 # Clerk test helper: ensures test users exist and mints session / sign-in tokens (secret never printed)
 import json
-import os
 import sys
 import requests
 from dotenv import dotenv_values

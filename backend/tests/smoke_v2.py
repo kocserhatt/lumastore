@@ -1,4 +1,4 @@
-import os, json, urllib.request, urllib.parse, uuid, sys, time
+import os, uuid, time
 import requests
 from dotenv import load_dotenv
 load_dotenv("/app/backend/.env")

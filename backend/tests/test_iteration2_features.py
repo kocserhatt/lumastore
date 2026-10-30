@@ -1,6 +1,5 @@
 # Iteration 2 regression: stock hiding, security, orders/idempotency/status flow, reviews, favorites, settings, uploads
 import io
-import os
 import time
 import uuid
 import concurrent.futures as cf

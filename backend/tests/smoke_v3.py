@@ -11,8 +11,8 @@ load_dotenv("/app/backend/.env")
 API = sys.argv[1]
 FAKE = "--iyzico-fake" in sys.argv
 H = {"Host": "luma-test.example.com"} if FAKE else {}
-SK = os.environ["CLERK_SECRET_KEY"]
-ADMIN, MEMBER = "user_3LQ7fqlPQupYzh5tlXAE0okqdse", "user_3LQ7fquqigC2cVuZVY3ZKoTTjM1"
+SK = os.environ.get("OWN_CLERK_SECRET_KEY") or os.environ["CLERK_SECRET_KEY"]
+ADMIN, MEMBER = "user_3LRApGYbwBe56MUxP6ovYSf2Ln5", "user_3LRApEvPVpluv2luEIaIOnL43Zo"
 
 
 def token(uid):

@@ -9,7 +9,7 @@ if not BASE:
     from dotenv import dotenv_values
     BASE = dotenv_values("/app/frontend/.env")["REACT_APP_BACKEND_URL"].rstrip("/")
 API = f"{BASE}/api"
-ADMIN, MEMBER = "user_3LQ7fqlPQupYzh5tlXAE0okqdse", "user_3LQ7fquqigC2cVuZVY3ZKoTTjM1"
+ADMIN, MEMBER = "user_3LRApGYbwBe56MUxP6ovYSf2Ln5", "user_3LRApEvPVpluv2luEIaIOnL43Zo"
 
 
 @pytest.fixture(scope="module")

@@ -2,9 +2,9 @@ import os, uuid, time
 import requests
 from dotenv import load_dotenv
 load_dotenv("/app/backend/.env")
-SK = os.environ["CLERK_SECRET_KEY"]
+SK = os.environ.get("OWN_CLERK_SECRET_KEY") or os.environ["CLERK_SECRET_KEY"]
 API = "http://localhost:8001/api"
-ADMIN, MEMBER = "user_3LQ7fqlPQupYzh5tlXAE0okqdse", "user_3LQ7fquqigC2cVuZVY3ZKoTTjM1"
+ADMIN, MEMBER = "user_3LRApGYbwBe56MUxP6ovYSf2Ln5", "user_3LRApEvPVpluv2luEIaIOnL43Zo"
 
 
 def token(uid):

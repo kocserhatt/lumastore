@@ -27,9 +27,9 @@ from iyzico_pay import (iyzico_enabled, build_request, initialize as iyzico_init
 from seed import seed_rows
 
 try:
-    from backend.clerk_auth import clerk_router, require_user
+    from backend.clerk_auth import clerk_router, require_user, _publishable_key, _secret_key
 except ModuleNotFoundError:
-    from clerk_auth import clerk_router, require_user
+    from clerk_auth import clerk_router, require_user, _publishable_key, _secret_key
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -70,7 +70,7 @@ ROLES = ["admin", "member"]
 DEFAULT_ROLE = "member"
 RETIRED_ROLES = {}
 RANK = {r: len(ROLES) - i for i, r in enumerate(ROLES)}
-ENV = "live" if os.environ.get("CLERK_PUBLISHABLE_KEY", "").startswith("pk_live_") else "preview"
+ENV = "live" if _publishable_key().startswith("pk_live_") else "preview"
 
 
 def effective_role(role) -> str:
@@ -85,7 +85,7 @@ def in_env():
 def _clerk_user_info(user_id: str):
     admins = {e.strip().lower() for e in os.environ.get("ADMIN_EMAIL", "").split(",") if e.strip()}
     r = requests.get(f"https://api.clerk.com/v1/users/{user_id}", timeout=10,
-                     headers={"Authorization": f"Bearer {os.environ['CLERK_SECRET_KEY']}", "User-Agent": "emergent-app"})
+                     headers={"Authorization": f"Bearer {_secret_key()}", "User-Agent": "emergent-app"})
     r.raise_for_status()
     data = r.json()
     emails = data.get("email_addresses", [])

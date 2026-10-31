@@ -4,7 +4,7 @@ import sys
 import requests
 from dotenv import dotenv_values
 
-_SK = dotenv_values("/app/backend/.env").get("CLERK_SECRET_KEY")
+_SK = (dotenv_values("/app/backend/.env").get("OWN_CLERK_SECRET_KEY") or dotenv_values("/app/backend/.env").get("CLERK_SECRET_KEY"))
 API = "https://api.clerk.com/v1"
 H = {"Authorization": f"Bearer {_SK}", "User-Agent": "emergent-test-agent", "Content-Type": "application/json"}
 

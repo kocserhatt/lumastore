@@ -10,8 +10,8 @@ from dotenv import dotenv_values
 
 BASE_URL = dotenv_values("/app/frontend/.env").get("REACT_APP_BACKEND_URL").rstrip("/")
 API = f"{BASE_URL}/api"
-_SK = dotenv_values("/app/backend/.env").get("CLERK_SECRET_KEY")
-ADMIN_ID, MEMBER_ID = "user_3LQ7fqlPQupYzh5tlXAE0okqdse", "user_3LQ7fquqigC2cVuZVY3ZKoTTjM1"
+_SK = (dotenv_values("/app/backend/.env").get("OWN_CLERK_SECRET_KEY") or dotenv_values("/app/backend/.env").get("CLERK_SECRET_KEY"))
+ADMIN_ID, MEMBER_ID = "user_3LRApGYbwBe56MUxP6ovYSf2Ln5", "user_3LRApEvPVpluv2luEIaIOnL43Zo"
 CH = {"Authorization": f"Bearer {_SK}", "User-Agent": "emergent-test-agent"}
 BODY = dict(customer_name="TEST Kullanici", customer_phone="05321234567", city="İstanbul",
             delivery_address="Test mahallesi test sokak no 1", payment_method="kapida_nakit")

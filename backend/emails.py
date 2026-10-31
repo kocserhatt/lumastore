@@ -22,8 +22,12 @@ def _from_name():
     return os.environ["EMAIL_FROM_NAME"]
 
 
+def _resend_ready() -> bool:
+    return bool(os.environ.get("RESEND_API_KEY") and os.environ.get("EMAIL_FROM"))
+
+
 def email_enabled() -> bool:
-    return bool(_key() and os.environ.get("EMAIL_FROM_NAME"))
+    return _resend_ready() or bool(_key() and os.environ.get("EMAIL_FROM_NAME"))
 
 
 _SHORTENERS = ("bit.ly", "tinyurl.com", "t.co", "is.gd", "cutt.ly", "goo.gl", "rebrand.ly")
@@ -98,8 +102,32 @@ def _assert_safe_email(subject: str, html: str) -> None:
                 raise ValueError(f"Anchor text {m.group(1)!r} ≠ real link host {real!r} (G3)")
 
 
+async def _send_resend(to: str, subject: str, html: str) -> str | None:
+    payload = {"from": os.environ["EMAIL_FROM"], "to": [to], "subject": subject, "html": html}
+    if os.environ.get("EMAIL_REPLY_TO"):
+        payload["reply_to"] = os.environ["EMAIL_REPLY_TO"]
+    async with httpx.AsyncClient(timeout=30) as client:
+        resp = await client.post("https://api.resend.com/emails", json=payload,
+                                 headers={"Authorization": f"Bearer {os.environ['RESEND_API_KEY']}"})
+    resp.raise_for_status()
+    return resp.json().get("id")
+
+
 async def send_email(*, to: str, subject: str, html: str) -> str | None:
     _assert_safe_email(subject, html)
+    if _resend_ready():
+        try:
+            return await _send_resend(to, subject, html)
+        except httpx.HTTPError as e:
+            detail = e.response.text[:200] if isinstance(e, httpx.HTTPStatusError) else str(e)
+            if not _key():
+                logger.error(f"Resend send failed: {detail}")
+                raise HTTPException(status_code=502, detail="Failed to send email")
+            logger.warning(f"Resend send failed, using fallback sender: {detail}")
+    return await _send_emergent(to, subject, html)
+
+
+async def _send_emergent(to: str, subject: str, html: str) -> str | None:
     payload = {"to": [to], "subject": subject, "html": html, "from_name": _from_name()}
     if os.environ.get("EMAIL_REPLY_TO"):
         payload["contact_email"] = os.environ["EMAIL_REPLY_TO"]

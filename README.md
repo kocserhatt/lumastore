@@ -26,7 +26,10 @@ Gerçek değerleri **asla** koda veya Git'e yazmayın. Şablonlar `backend/.env.
 | `CORS_ORIGINS` | evet | Frontend adres(ler)i, virgülle ayrılmış. Örnek: `https://lumapetshop.com.tr` |
 | `IYZICO_API_KEY`, `IYZICO_SECRET_KEY` | ödeme için | iyzico Merchant Panel → Ayarlar → Firma Ayarları |
 | `IYZICO_BASE_URL` | ödeme için | Test: `https://sandbox-api.iyzipay.com`, canlı: `https://api.iyzipay.com` |
-| `EMERGENT_EMAIL_KEY`, `EMAIL_FROM_NAME`, `EMAIL_REPLY_TO` | e-posta için | E-posta gönderimi. Emergent dışında barındırırken aşağıdaki nota bakın. |
+| `RESEND_API_KEY`, `EMAIL_FROM` | e-posta için | Resend anahtarı ve doğrulanmış gönderen (ör. `Luma Petshop <bildirim@lumapetshop.com.tr>`) |
+| `EMAIL_FROM_NAME`, `EMAIL_REPLY_TO` | e-posta için | Gönderen adı ve yanıt adresi |
+| `WHATSAPP_NUMBER` | hayır | Ayar boşsa kullanılacak WhatsApp numarası (`905389493567`) |
+| `EMERGENT_EMAIL_KEY` | hayır | Sadece Emergent önizlemesinde yedek e-posta servisi |
 | `MONGO_URL`, `DB_NAME` | hayır | Kullanılmıyor (şablondan kaldı) |
 
 ### Frontend
@@ -73,36 +76,49 @@ yarn start
 - Ya da elle aktarın: `git remote add origin <repo-url> && git push -u origin main`
 - `.env` dosyaları `.gitignore` içinde olduğu için repoya gitmez. Push öncesi `git status` ile kontrol edin.
 
-## Yayınlama
+## Yayınlama: Vercel (tek proje, site + API aynı alan adında)
 
-### Frontend: Vercel
+Repo kökündeki `vercel.json` her şeyi ayarlar:
 
-1. Vercel → **Add New Project** → GitHub reposunu seçin.
-2. **Root Directory:** `frontend`. **Framework:** Create React App.
-3. **Install Command:** `yarn install`. **Build Command:** `yarn build`. **Output Directory:** `build`.
-4. **Environment Variables:** `REACT_APP_BACKEND_URL=https://<backend-adresiniz>`
-5. Deploy edin. `frontend/vercel.json`, sayfa yenilemede 404 almamak için tüm yolları `index.html`'e yönlendirir.
+- React sitesi `frontend/build` olarak yayınlanır.
+- `/api/*` istekleri `api/index.py` üzerinden FastAPI'ye (`backend/server.py`) gider.
+- API sadece kökteki sade `requirements.txt` dosyasını kullanır. `backend/requirements.txt` Emergent geliştirme ortamı içindir.
 
-### Backend: Render, Railway veya Fly.io (önerilen)
+1. Vercel → **Add New → Project** → GitHub reposunu seçin. **Root Directory** repo kökü (`./`) olarak kalsın. Framework: **Other**. Build ayarlarına dokunmayın, `vercel.json` kullanılır.
+2. **Settings → Environment Variables** bölümüne şunları girin:
+   - `DATABASE_URL`, `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_STORAGE_BUCKET=product-images`
+   - `CLERK_PUBLISHABLE_KEY`, `CLERK_SECRET_KEY` (kendi Clerk uygulamanızın anahtarları)
+   - `ADMIN_EMAIL=info@lumapetshop.com.tr`, `WHATSAPP_NUMBER=905389493567`
+   - `RESEND_API_KEY`, `EMAIL_FROM=Luma Petshop <bildirim@lumapetshop.com.tr>`, `EMAIL_FROM_NAME=Luma Petshop`, `EMAIL_REPLY_TO=info@lumapetshop.com.tr`
+   - `IYZICO_API_KEY`, `IYZICO_SECRET_KEY`, `IYZICO_BASE_URL` (anahtarlar gelince)
+   - `CORS_ORIGINS=https://lumapetshop.com.tr` ve `REACT_APP_BACKEND_URL=https://lumapetshop.com.tr` (sitenin kendi adresi, sonunda `/` olmadan)
+3. **Deploy** edin. **Settings → Domains** bölümünden `lumapetshop.com.tr` alan adını ekleyin ve DNS kayıtlarını Vercel'in gösterdiği gibi girin.
+4. `REACT_APP_BACKEND_URL` veya alan adı değişirse **Redeploy** yapın. Bu değer site derlenirken koda gömülür.
 
-Backend uzun süre çalışan bir FastAPI sunucusudur. Arka plan e-postaları ve fotoğraf optimizasyonu kullandığı için Vercel serverless yerine bu tür bir sunucu önerilir.
+Veritabanı tabloları Supabase'te zaten kurulu. İleride yeni bir migration gelirse bilgisayarınızda `cd backend && alembic upgrade head` çalıştırın.
 
-- **Root:** `backend`
-- **Build:** `pip install -r requirements.txt && alembic upgrade head`
-- **Start:** `uvicorn server:app --host 0.0.0.0 --port $PORT`
-- Yukarıdaki backend ortam değişkenlerinin tümünü girin. `CORS_ORIGINS` için Vercel adresinizi yazın.
+### Clerk (kendi uygulamanız)
 
-### Yayından sonra
+Proje zaten Clerk kullanıyor. Clerk'in gösterdiği `npx clerk init` komutunu **çalıştırmayın**, sadece anahtarlar gerekiyor.
 
-- **Clerk:** Clerk panelinde canlı (production) instance açın ve alan adınızı ekleyin. Canlı anahtarları (`pk_live` / `sk_live`) backend ortam değişkenlerine girin.
-- **iyzico:** callback adresi otomatik olarak `https://<backend-host>/api/payments/iyzico/callback` olur. Backend'in HTTPS olması gerekir.
+1. **Geliştirme / deneme:** Clerk Dashboard → **API Keys** → `pk_test_...` ve `sk_test_...` anahtarlarını Vercel'e girin. `*.vercel.app` adresinde hemen çalışır.
+2. **Canlı:** Clerk Dashboard → **Production instance** oluşturun → alan adı `lumapetshop.com.tr`.
+   - Domains → **Proxy** seçeneğinde Frontend API proxy URL olarak `https://lumapetshop.com.tr/api/__clerk` girin. Backend bu proxy'yi hazır sunuyor.
+   - Ardından `pk_live_...` ve `sk_live_...` anahtarlarını Vercel'e girip yeniden yayınlayın.
+3. **Şifre kuralı:** Clerk Dashboard → **Configure → User & authentication → Password** → minimum uzunluk **8**, **Require uppercase** açık.
+4. **Yönetici:** Siteye `info@lumapetshop.com.tr` ile üye olup e-postayı doğrulayın. İlk girişte otomatik yönetici olursunuz.
+   - Emergent önizlemesindeki hesaplar yeni Clerk uygulamasına taşınmaz; müşteriler yeniden üye olur.
+   - Misafir ve eski siparişler veritabanında kalır.
 
-## Emergent'a özel parçalar
+### E-posta (Resend)
 
-Bağımsız barındırmada bunlar değişmelidir:
+- `RESEND_API_KEY` ve `EMAIL_FROM` tanımlıysa e-postalar Resend'den gider.
+- Resend Dashboard → **Domains** → `lumapetshop.com.tr` ekleyip DNS kayıtlarını (SPF/DKIM) girin. Domain **Verified** olmadan Resend müşterilere e-posta göndermez.
+- Emergent önizlemesinde Resend başarısız olursa Emergent'ın e-posta servisi yedek olarak kullanılır. Vercel'de bu yedek yoktur.
 
-- **E-posta:** `backend/emails.py`, Emergent'ın yönetilen e-posta servisini (`EMERGENT_EMAIL_KEY`) kullanır. Bağımsız barındırmada kendi Resend hesabınızı açın ve `send_email` fonksiyonunu Resend API'sine (`https://api.resend.com/emails`, `RESEND_API_KEY`) çevirin. Gönderen alan adınızı Resend'de doğrulayın.
-- **Clerk:** Şu anki Clerk instance'ı Emergent tarafından yönetilir. Kendi Clerk hesabınızı açıp anahtarlarını kullanın. Şifre kuralını Clerk → User & Authentication → Password bölümünden ayarlayın: en az 8 karakter, en az bir büyük harf.
+### iyzico
+
+Callback adresi otomatik olarak `https://lumapetshop.com.tr/api/payments/iyzico/callback` olur. Site ve API aynı alan adında olduğu için ek ayar gerekmez.
 
 ## Testler
 

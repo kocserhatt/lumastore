@@ -1,3 +1,4 @@
+
 import "@/App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import ClerkAuthProvider from "@/components/auth/ClerkAuthProvider";
@@ -27,6 +28,15 @@ const Footer = () => (
     <div className="mx-auto flex max-w-7xl flex-wrap justify-center gap-x-5 gap-y-2">
       {LEGAL_LINKS.map((l) => <Link key={l.slug} to={`/sayfa/${l.slug}`} data-testid={`footer-link-${l.slug}`} className="font-semibold text-zinc-600 hover:text-orange-700">{l.title}</Link>)}
     </div>
+
+    <div className="mt-5 flex justify-center">
+      <img
+        src="/iyzico-kartlar.png"
+        alt="iyzico, Visa, Mastercard, American Express ve Troy"
+        className="h-auto w-full max-w-[280px] object-contain"
+      />
+    </div>
+
     <p className="mt-4 text-center">© {new Date().getFullYear()} Luma Petshop · info@lumapetshop.com.tr</p>
   </footer>
 );

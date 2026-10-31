@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { SignIn, SignUp } from "@clerk/react";
 import { PawPrint } from "lucide-react";
 import { CATEGORY_META } from "@/lib/shop";
@@ -16,9 +17,19 @@ const Shell = ({ children }) => (
 );
 
 export const SignInPage = () => (
-  <Shell><SignIn routing="path" path="/sign-in" signUpUrl="/sign-up" withSignUp /></Shell>
+  <Shell>
+    <div className="flex flex-col items-center gap-4">
+      <SignIn routing="path" path="/sign-in" signUpUrl="/sign-up" withSignUp />
+      <p className="text-sm text-zinc-600">Hesabın yok mu? <Link to="/sign-up" data-testid="sign-in-to-sign-up-link" className="font-bold text-orange-700 hover:underline">Üye Ol</Link></p>
+    </div>
+  </Shell>
 );
 
 export const SignUpPage = () => (
-  <Shell><SignUp routing="path" path="/sign-up" signInUrl="/sign-in" /></Shell>
+  <Shell>
+    <div className="flex flex-col items-center gap-4">
+      <SignUp routing="path" path="/sign-up" signInUrl="/sign-in" />
+      <p className="text-sm text-zinc-600">Zaten üye misin? <Link to="/sign-in" data-testid="sign-up-to-sign-in-link" className="font-bold text-orange-700 hover:underline">Giriş Yap</Link></p>
+    </div>
+  </Shell>
 );

@@ -1,0 +1,30 @@
+{
+  "summary": "Iteration 8: verified switch to the user's own Clerk dev instance (gentle-kite-1463). /api/clerk/config returns enabled=true, a pk_test key that decodes to gentle-kite-1463.clerk.accounts.dev$, and proxy_url ''. smoke_v3.py passes 11/11. New pytest test_iteration8_own_clerk.py passes 21/21: both Clerk users exist; protected endpoints return 401 without a token or with a bad token; admin gets role=admin and 200 on every /admin/* and /users endpoint; the member gets 403 on admin endpoints and 200 on orders/favorites/cart/notifications. UI checks: /sign-in shows the Clerk form in Turkish (Google button + e-mail field) and /sign-up renders. Admin sign-in with __clerk_ticket works: header shows the Yönetici link and avatar, and /admin shows stats, critical stock, best sellers, the orders board (38 orders) and products (13). The session survives a refresh. Guest flow: add to cart while signed out, then /odeme shows the guest notice, Adrese/Mağazadan delivery options and 'Online ödeme yakında'; signed-out /siparislerim redirects to /sign-in. After the member signs in with a ticket the guest cart item is merged (count 1, item in /sepet). /siparislerim (empty state) and /favorilerim load, and /admin redirects the member to /. Sign-out through the Clerk UserButton brings back the signed-out header.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "/sign-in Clerk card", "issues": [
+        "The card title reads 'Continue to My Application': the application name in the user's Clerk instance is still the default. Rename it to 'Luma Petshop' in Clerk Dashboard > Settings (this is a dashboard setting, not code).",
+        "No 'Hesabın yok mu? Kayıt ol' footer link appears in the SignIn card (0 a[href*=sign-up]); it shows only 'Secured by Clerk'. The withSignUp combined flow lets unknown e-mails continue to sign-up, but there is no visible sign-up link. This may come from instance settings (combined sign-in-or-up). Header/checkout 'Üye Ol' links still reach /sign-up."
+      ]}
+    ]
+  },
+  "test_report_links": ["/app/backend/tests/test_iteration8_own_clerk.py", "/app/backend/tests/smoke_v3.py", "/app/backend/tests/own_clerk_ticket.py", "/app/test_reports/pytest/iteration8.xml"],
+  "action_items": [
+    "Optional: set the Clerk application name to 'Luma Petshop' in the user's Clerk dashboard",
+    "Optional: decide whether the SignIn card should show an explicit sign-up footer link (check the combined-flow setting / remove withSignUp)",
+    "/app/backend/tests/clerk_helper.py still uses the old managed-instance users (info@, testa/testb+clerk_test) and would CREATE users in the new instance if run. Update it to the new user ids, or stop using it"
+  ],
+  "critical_code_review_comments": [
+    "clerk_auth._publishable_key uses .split()[0] while _secret_key uses .strip(). Both are fine, but they are inconsistent",
+    "server._clerk_user_info raises on a Clerk lookup failure (no default-role fallback), which is correct per the playbook"
+  ],
+  "updated_files": ["/app/backend/tests/test_iteration8_own_clerk.py", "/app/backend/tests/own_clerk_ticket.py"],
+  "success_rate": {"backend": "100%", "frontend": "100%"},
+  "seed_data_creation": "None. No Clerk users created. The member's merged test cart item was removed afterwards. Admin settings and products untouched.",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Own Clerk instance gentle-kite-1463. Get a sign-in ticket with: python3 /app/backend/tests/own_clerk_ticket.py <user_id>, then open /sign-in?__clerk_ticket=<t>. It redirects to / signed in. Admin user_3LRApGYbwBe56MUxP6ovYSf2Ln5, member user_3LRApEvPVpluv2luEIaIOnL43Zo. Sign-out: .cl-userButtonTrigger, then .cl-userButtonPopoverActionButton__signOut. Do not use clerk_helper.py (stale user list)."
+}

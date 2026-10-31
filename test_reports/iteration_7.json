@@ -1,0 +1,22 @@
+{
+  "summary": "Iteration 7: Resend email path + Vercel single-project config + regression. Backend 7/7 pytest pass + smoke_v3 11/11 pass. Email: send_email to info@lumapetshop.com.tr returned id 01a18f47-95be-7698-a12d-99da74572400 after Resend 403 (domain lumapetshop.com.tr not verified) -> 'Resend send failed, using fallback sender' warning logged (printed in the standalone python process, as expected; not in supervisor backend log since run out-of-process). Vercel: api.index imports FastAPI app fine; vercel.json valid with /api/(.*)->/api/index and SPA fallback. Frontend 390px: home loads (6 cards), whatsapp-fab visible with wa.me/905389493567, guest add-to-cart (badge 1), /sepet -> /odeme renders checkout form, guest notice, delivery-adres/delivery-magaza (store pickup info shows, address input hidden), online payment 'Yakında', submit disabled. No page errors.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [{"screen": "Mobile 390px all pages", "issues": ["Cookie banner floats at top under header and covers hero/checkout content until dismissed (minor; consider bottom placement above BottomNav)"]}]
+  },
+  "test_report_links": ["/app/backend/tests/test_vercel_resend_regression.py", "/app/backend/tests/smoke_v3.py", "/app/test_reports/pytest/pytest_results_iter7.xml"],
+  "action_items": ["Verify lumapetshop.com.tr domain in Resend (DNS) so Resend sends directly; on Vercel, EMERGENT_EMAIL_KEY likely absent so unverified domain would yield 502 for direct sends (safe_send swallows it)"],
+  "critical_code_review_comments": [
+    "emails.send_email: only httpx.HTTPError caught around Resend; a non-JSON 2xx body (ValueError from resp.json()) would bypass fallback - very minor",
+    "On Vercel without EMERGENT_EMAIL_KEY, Resend failure raises 502 and no fallback; ensure Resend domain verified before go-live",
+    "app.title is default 'FastAPI' (cosmetic)"
+  ],
+  "updated_files": ["/app/backend/tests/test_vercel_resend_regression.py"],
+  "success_rate": {"backend": "100%", "frontend": "100%"},
+  "seed_data_creation": "None. 1 test email sent to info@lumapetshop.com.tr. No settings/products modified.",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Products API hides stock; >=1000 shipping test uses top-3 priced items x2. pytest.ini adds xdist args (-n), don't pass -p no:xdist. Iyzico keys intentionally absent -> orders 503."
+}

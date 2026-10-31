@@ -1,0 +1,22 @@
+[project]
+name = "luma-petshop-backend"
+version = "1.0.0"
+description = "Luma Petshop FastAPI backend (Vercel runtime dependencies only; Emergent dev env uses requirements.txt)"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi==0.110.1",
+    "starlette==0.37.2",
+    "pydantic==2.14.1",
+    "email-validator==2.3.0",
+    "python-multipart==0.0.32",
+    "SQLAlchemy==2.1.6",
+    "greenlet==3.5.6",
+    "asyncpg==0.32.0",
+    "python-dotenv==1.2.4",
+    "httpx==0.28.1",
+    "requests==2.34.2",
+    "PyJWT==2.15.1",
+    "cryptography==50.0.2",
+    "pillow==13.0.0",
+    "iyzipay==1.0.46",
+]

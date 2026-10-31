@@ -36,7 +36,7 @@ Gerçek değerleri **asla** koda veya Git'e yazmayın. Şablonlar `backend/.env.
 
 | Değişken | Açıklama |
 |---|---|
-| `REACT_APP_BACKEND_URL` | Backend'in herkese açık adresi, sonunda `/` olmadan. Örnek: `https://api.lumapetshop.com.tr` |
+| `REACT_APP_BACKEND_URL` | Sadece yerelde ve Emergent önizlemesinde backend adresi (ör. `http://localhost:8001`). Vercel'de boş bırakılır; API aynı alan adındaki `/api` olur. |
 
 ## iyzico'yu etkinleştirme
 
@@ -58,7 +58,7 @@ Kart bilgisi hiçbir yerde saklanmaz. Ödenmemiş siparişler panelden iptal edi
 # backend
 cd backend
 python -m venv .venv && source .venv/bin/activate
-pip install -r requirements.txt
+pip install -r requirements.txt   # Emergent dışında sade liste için: pip install .
 cp .env.example .env     # değerleri doldurun
 alembic upgrade head     # Supabase tablolarını oluşturur / günceller
 uvicorn server:app --reload --port 8001
@@ -78,23 +78,28 @@ yarn start
 
 ## Yayınlama: Vercel (tek proje, site + API aynı alan adında)
 
-Repo kökündeki `vercel.json` her şeyi ayarlar:
+Repo kökündeki `vercel.json`, Vercel **Services** modunda iki servis tanımlar:
 
-- React sitesi `frontend/build` olarak yayınlanır.
-- `/api/*` istekleri `api/index.py` üzerinden FastAPI'ye (`backend/server.py`) gider.
-- API sadece kökteki sade `requirements.txt` dosyasını kullanır. `backend/requirements.txt` Emergent geliştirme ortamı içindir.
+| Servis | Kök | Herkese açık yol | Açıklama |
+|---|---|---|---|
+| `frontend` | `frontend/` | `/` (geri kalan her şey) | React (CRA) sitesi; SPA için tüm yollar `index.html`'e düşer |
+| `backend` | `backend/` | `/api/*` | FastAPI (`server:app`), istekleri `/api/...` yoluyla aynen alır |
+
+- Servisler arasında **binding yok**. Site, API'yi tarayıcıdan aynı alan adındaki `/api` yoluyla çağırır; sunucudan sunucuya çağrı yoktur.
+- Site derlenirken `REACT_APP_BACKEND_URL` boş bırakılır, böylece API adresi `/api` olur. Vercel'de bu değişkeni girmenize gerek yoktur.
+- Backend bağımlılıkları `backend/pyproject.toml` dosyasından kurulur (sade liste). `backend/requirements.txt` yalnızca Emergent geliştirme ortamı içindir.
 - Build sırasında `frontend/scripts/vercel-prepare.js`, Emergent önizlemesine ait script'leri ve analitiği `index.html`'den çıkarır.
+- Yerelde tüm servisleri birlikte çalıştırmak için: `vercel dev`
 
-1. Vercel → **Add New → Project** → GitHub reposunu seçin. **Root Directory** repo kökü (`./`) olarak kalsın. Framework: **Other**. Build ayarlarına dokunmayın, `vercel.json` kullanılır.
+1. Vercel → **Add New → Project** → GitHub reposunu seçin. **Root Directory** repo kökü (`./`) olarak kalsın. Vercel `vercel.json` içindeki servisleri otomatik algılar; build ayarlarına dokunmayın.
 2. **Settings → Environment Variables** bölümüne şunları girin:
    - `DATABASE_URL`, `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_STORAGE_BUCKET=product-images`
    - `CLERK_PUBLISHABLE_KEY`, `CLERK_SECRET_KEY` (kendi Clerk uygulamanızın anahtarları)
    - `ADMIN_EMAIL=info@lumapetshop.com.tr`, `WHATSAPP_NUMBER=905389493567`
    - `RESEND_API_KEY`, `EMAIL_FROM=Luma Petshop <bildirim@lumapetshop.com.tr>`, `EMAIL_FROM_NAME=Luma Petshop`, `EMAIL_REPLY_TO=info@lumapetshop.com.tr`
    - `IYZICO_API_KEY`, `IYZICO_SECRET_KEY`, `IYZICO_BASE_URL` (anahtarlar gelince)
-   - `CORS_ORIGINS=https://lumapetshop.com.tr` ve `REACT_APP_BACKEND_URL=https://lumapetshop.com.tr` (sitenin kendi adresi, sonunda `/` olmadan)
+   - `CORS_ORIGINS=https://lumapetshop.com.tr` (site ve API aynı alan adında olduğu için zorunlu değil)
 3. **Deploy** edin. **Settings → Domains** bölümünden `lumapetshop.com.tr` alan adını ekleyin ve DNS kayıtlarını Vercel'in gösterdiği gibi girin.
-4. `REACT_APP_BACKEND_URL` veya alan adı değişirse **Redeploy** yapın. Bu değer site derlenirken koda gömülür.
 
 Veritabanı tabloları Supabase'te zaten kurulu. İleride yeni bir migration gelirse bilgisayarınızda `cd backend && alembic upgrade head` çalıştırın.
 

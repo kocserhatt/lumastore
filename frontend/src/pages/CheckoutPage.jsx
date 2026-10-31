@@ -134,6 +134,13 @@ export default function CheckoutPage() {
           <button type="submit" disabled={busy || !enabled} data-testid="checkout-submit-button" className="mt-5 w-full rounded-full bg-orange-600 py-3.5 text-sm font-bold text-white transition-colors hover:bg-orange-700 disabled:cursor-not-allowed disabled:opacity-50">
             {busy ? "Ödemeye yönlendiriliyor..." : enabled ? "Ödemeye Geç" : "Online ödeme yakında"}
           </button>
+          <div className="mt-3 flex justify-center rounded-2xl border border-zinc-100 bg-white p-3">
+            <img
+              src="/iyzico-kartlar.png"
+              alt="iyzico, Visa, Mastercard, American Express ve Troy"
+              className="h-auto w-full max-w-[280px] object-contain"
+            />
+          </div>
         </OrderSummary>
       </form>
     </div>

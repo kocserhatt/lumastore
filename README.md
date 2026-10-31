@@ -83,6 +83,7 @@ Repo kökündeki `vercel.json` her şeyi ayarlar:
 - React sitesi `frontend/build` olarak yayınlanır.
 - `/api/*` istekleri `api/index.py` üzerinden FastAPI'ye (`backend/server.py`) gider.
 - API sadece kökteki sade `requirements.txt` dosyasını kullanır. `backend/requirements.txt` Emergent geliştirme ortamı içindir.
+- Build sırasında `frontend/scripts/vercel-prepare.js`, Emergent önizlemesine ait script'leri ve analitiği `index.html`'den çıkarır.
 
 1. Vercel → **Add New → Project** → GitHub reposunu seçin. **Root Directory** repo kökü (`./`) olarak kalsın. Framework: **Other**. Build ayarlarına dokunmayın, `vercel.json` kullanılır.
 2. **Settings → Environment Variables** bölümüne şunları girin:
